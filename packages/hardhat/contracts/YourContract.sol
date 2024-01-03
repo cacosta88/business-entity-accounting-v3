@@ -379,9 +379,9 @@ contract YourContract {
 				value: expenseProposal.amount
 			}("");
 			require(success, "TransferFailed");
-			earmarkedFunds -= expenseProposal.amount; // Reduce earmarked funds upon settlement
+			earmarkedFunds -= expenseProposal.amount; 
 		} else {
-			// If not settling, just reduce the earmarked funds
+
 			earmarkedFunds -= expenseProposal.amount;
 		}
 
@@ -397,7 +397,7 @@ contract YourContract {
 		emit ExpenseSettled(expenseID, toSettle);
 	}
 
-    //need to update this, so it uses the index to update
+  
 	function clearExpiredProposals() external onlyAdmin {
 		for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
 			uint256 expenseID = expenseProposalIDs[i];
@@ -459,7 +459,7 @@ contract YourContract {
 
 		grossReceipts += msg.value;
 
-		// Remove the invoice ID from the array
+	
 		uint256 indexToRemove = invoiceIndex[invoiceID];
 		uint256 lastInvoiceID = invoiceIDs[invoiceIDs.length - 1];
 
