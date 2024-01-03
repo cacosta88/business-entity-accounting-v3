@@ -288,6 +288,7 @@ const Home: NextPage = () => {
   const handleInvoiceTabChange = (tabName: string) => {
     setInvoiceTab(tabName);
   };
+  //eslint-disable-next-line
   const handleInvoiceModalClickOutside = (event: MouseEvent) => {
     if (invoiceModalRef.current && !invoiceModalRef.current.contains(event.target as Node)) {
       closeInvoiceModal();
@@ -311,6 +312,7 @@ const Home: NextPage = () => {
 
   const openPercentageModal = () => setIsPercentageModalOpen(true);
   const closePercentageModal = () => setIsPercentageModalOpen(false);
+  //eslint-disable-next-line
   const handlePercentageModalClickOutside = (event: MouseEvent) => {
     if (percentageModalRef.current && !percentageModalRef.current.contains(event.target as Node)) {
       closePercentageModal();
