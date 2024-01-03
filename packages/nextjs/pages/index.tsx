@@ -104,7 +104,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isModalOpen]);
+  }, [isModalOpen, handleClickOutside]);
 
   const selectedTabStyle: CSSProperties = {
     backgroundColor: "white",
@@ -298,7 +298,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handleInvoiceModalClickOutside);
     };
-  }, [isInvoiceModalOpen]);
+  }, [isInvoiceModalOpen, handleInvoiceModalClickOutside]);
 
   const [isPercentageModalOpen, setIsPercentageModalOpen] = useState(false);
   const percentageModalRef = useRef<HTMLDivElement>(null);
@@ -323,7 +323,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handlePercentageModalClickOutside);
     };
-  }, [isPercentageModalOpen]); // Only re-run if isPercentageModalOpen changes
+  }, [isPercentageModalOpen, handlePercentageModalClickOutside]);
 
   //eslint-disable-next-line
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
