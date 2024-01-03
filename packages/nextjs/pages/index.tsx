@@ -97,6 +97,11 @@ const Home: NextPage = () => {
   }, [isModalOpen]);
 
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (expensesModalRef.current && !expensesModalRef.current.contains(event.target as Node)) {
+        closeExpensesModal();
+      }
+    };
     if (isModalOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
