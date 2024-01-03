@@ -72,6 +72,7 @@ const Home: NextPage = () => {
 
   const goToPage = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  //eslint-disable-next-line
   const handleClickOutside = (event: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
       event.stopPropagation();
@@ -93,7 +94,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutsideexp);
     };
-  }, [isModalOpen, handleClickOutside]); // Include handleClickOutsideexp in the dependency array
+  }, [isModalOpen]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -103,7 +104,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isModalOpen, handleClickOutside]);
+  }, [isModalOpen]);
 
   const selectedTabStyle: CSSProperties = {
     backgroundColor: "white",
