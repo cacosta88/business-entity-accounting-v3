@@ -288,13 +288,11 @@ const Home: NextPage = () => {
   const handleInvoiceTabChange = (tabName: string) => {
     setInvoiceTab(tabName);
   };
-
   const handleInvoiceModalClickOutside = (event: MouseEvent) => {
     if (invoiceModalRef.current && !invoiceModalRef.current.contains(event.target as Node)) {
       closeInvoiceModal();
     }
   };
-
   useEffect(() => {
     if (isInvoiceModalOpen) {
       document.addEventListener("mousedown", handleInvoiceModalClickOutside);
@@ -303,7 +301,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handleInvoiceModalClickOutside);
     };
-  }, [isInvoiceModalOpen]);
+  }, [isInvoiceModalOpen, handleInvoiceModalClickOutside]);
 
   const [isPercentageModalOpen, setIsPercentageModalOpen] = useState(false);
   const percentageModalRef = useRef<HTMLDivElement>(null);
@@ -313,13 +311,11 @@ const Home: NextPage = () => {
 
   const openPercentageModal = () => setIsPercentageModalOpen(true);
   const closePercentageModal = () => setIsPercentageModalOpen(false);
-
   const handlePercentageModalClickOutside = (event: MouseEvent) => {
     if (percentageModalRef.current && !percentageModalRef.current.contains(event.target as Node)) {
       closePercentageModal();
     }
   };
-
   useEffect(() => {
     if (isPercentageModalOpen) {
       document.addEventListener("mousedown", handlePercentageModalClickOutside);
@@ -328,7 +324,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener("mousedown", handlePercentageModalClickOutside);
     };
-  }, [isPercentageModalOpen]);
+  }, [isPercentageModalOpen, handlePercentageModalClickOutside]);
 
   //eslint-disable-next-line
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
