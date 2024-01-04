@@ -535,7 +535,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (arrayOfExpenseProposals) {
       const arrayOfExpenseProposals_ = arrayOfExpenseProposals.map((expproposalArray: any) => {
-        const [id, recipient, amount, votes, approved] = expproposalArray;
+        const [id, recipient, amount, votes, status] = expproposalArray;
 
         return {
           id: Number(id),
@@ -543,7 +543,7 @@ const Home: NextPage = () => {
           recipient: "0x" + recipient.toString(16),
           amount: (Number(amount) / 1e18).toFixed(4),
           votes: Number(votes),
-          approved: Number(approved) === 1,
+          status: Number(status),
         };
       });
 
@@ -1476,7 +1476,7 @@ const Home: NextPage = () => {
                                         {expenseProposal.votes}
                                       </td>
                                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.approved ? "Yes" : "No"}
+                                        {expenseProposal.status}
                                       </td>
                                     </tr>
                                   ))}
