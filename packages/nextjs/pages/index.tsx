@@ -566,6 +566,20 @@ const Home: NextPage = () => {
     }
   }, [arrayOfExpenseProposalDescriptions]);
 
+  const { data: arrayOfExpenseApprovedDescriptions } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "getApprovedExpenseProposalDescriptions",
+  });
+
+  const [arrayOfExpenseApprovedDescriptionsArray, setArrayOfExpenseApprovedDescriptionsArray] = useState<any>([]);
+
+  useEffect(() => {
+    if (arrayOfExpenseApprovedDescriptions) {
+      setArrayOfExpenseApprovedDescriptionsArray(arrayOfExpenseApprovedDescriptions);
+      console.log("arrayOfExpenseApprovedDescriptions", arrayOfExpenseApprovedDescriptions);
+    }
+  }, [arrayOfExpenseApprovedDescriptions]);
+
   return (
     <>
       <MetaHeader />
@@ -1450,14 +1464,14 @@ const Home: NextPage = () => {
                                     scope="col"
                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                   >
-                                    Approved?
+                                    Status
                                   </th>
                                 </tr>
                               </thead>
 
                               <tbody className="bg-white divide-y divide-gray-200">
                                 {arrayOfExpenseProposalsArray
-                                  .filter((expenseProposal: any) => !expenseProposal.approved)
+                                  .filter((expenseProposal: any) => expenseProposal.status === 0)
                                   .map((expenseProposal: any, index: number) => (
                                     <tr key={expenseProposal.id} className="hover:bg-gray-100">
                                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -1476,7 +1490,10 @@ const Home: NextPage = () => {
                                         {expenseProposal.votes}
                                       </td>
                                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.status}
+                                        {expenseProposal.status === 0 && "Proposed"}
+                                        {expenseProposal.status === 1 && "Approved"}
+                                        {expenseProposal.status === 2 && "Settled"}
+                                        {expenseProposal.status === 3 && "Canceled"}
                                       </td>
                                     </tr>
                                   ))}
@@ -1484,7 +1501,83 @@ const Home: NextPage = () => {
                             </table>
                           </div>
                         )}
-                        {expensesTab === 3 && <div>Content for Settle Expense</div>}
+                        {expensesTab === 3 && (
+                          <div>
+                            <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                              <thead>
+                                <tr className="bg-slate-100">
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Expense ID
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Expense Description
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Expense Recipient
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Expense Amount
+                                  </th>
+
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Votes
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Status
+                                  </th>
+                                </tr>
+                              </thead>
+
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                {arrayOfExpenseProposalsArray
+                                  .filter((expenseProposal: any) => expenseProposal.status === 1)
+                                  .map((expenseProposal: any, index: number) => (
+                                    <tr key={expenseProposal.id} className="hover:bg-gray-100">
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <ExpAdjVote proposalID={expenseProposal.id} />
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {arrayOfExpenseApprovedDescriptionsArray[index]}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.recipient}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.amount}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.votes}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.status === 0 && "Proposed"}
+                                        {expenseProposal.status === 1 && "Approved"}
+                                        {expenseProposal.status === 2 && "Settled"}
+                                        {expenseProposal.status === 3 && "Canceled"}
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                         {expensesTab === 4 && <div>Content for Paid Expenses</div>}
                       </div>
                     </div>

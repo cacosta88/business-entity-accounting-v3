@@ -842,5 +842,42 @@ contract YourContract {
 		return approvedExpenseProposals;
 	}
 
+	//now the descriptions for the approved expenses
+	function getApprovedExpenseProposalDescriptions()
+		external
+		view
+		returns (string[] memory)
+	{
+		uint256 approvedCount = 0;
+		for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
+			if (
+				expenseProposals[expenseProposalIDs[i]].status ==
+				ExpenseStatus.Approved
+			) {
+				approvedCount++;
+			}
+		}
+
+		string[] memory approvedExpenseProposalDescriptions = new string[](
+			approvedCount
+		);
+
+		uint256 currentIndex = 0;
+		for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
+			if (
+				expenseProposals[expenseProposalIDs[i]].status ==
+				ExpenseStatus.Approved
+			) {
+				approvedExpenseProposalDescriptions[currentIndex] = expenseProposals[
+					expenseProposalIDs[i]
+				]
+					.description;
+				currentIndex++;
+			}
+		}
+
+		return approvedExpenseProposalDescriptions;
+	}
+
 
 }
