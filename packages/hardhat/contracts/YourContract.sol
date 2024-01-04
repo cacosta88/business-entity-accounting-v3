@@ -21,13 +21,19 @@ contract YourContract {
 		bool isIncrease;
 	}
 
+	enum ExpenseStatus {
+        Proposed,
+        Approved,
+        Settled,
+        Cancelled
+    }
+
 	struct ExpenseProposal {
 		string description;
 		address recipient;
 		uint256 amount;
 		uint256 votes;
-		bool approved;
-		uint256 settlementDate;
+		ExpenseStatus status; 
 	}
 
 
@@ -306,7 +312,8 @@ contract YourContract {
 		expenseProposal.description = description;
 		expenseProposal.recipient = recipient;
 		expenseProposal.amount = amount;
-		expenseProposal.settlementDate = block.timestamp;
+		expenseProposal.status = ExpenseStatus.Proposed;
+	
 		uint256 initialExpenseProposalVotes = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
@@ -314,7 +321,7 @@ contract YourContract {
 		expenseProposalVoters[expenseProposalCounter][msg.sender] = true;
 
 		if (initialExpenseProposalVotes > 50) {
-			expenseProposal.approved = true;
+			expenseProposal.status = ExpenseStatus.Approved;
 			totalExpenses += amount;
 			earmarkedFunds += amount;
 			emit ExpenseApproved(expenseProposalCounter);
@@ -347,7 +354,7 @@ contract YourContract {
 		expenseProposalVoters[expenseID][msg.sender] = true;
 
 		if (expenseProposal.votes > 50) {
-			expenseProposal.approved = true;
+			expenseProposal.status = ExpenseStatus.Approved;
 			totalExpenses += expenseProposal.amount;
 			earmarkedFunds += expenseProposal.amount;
 			emit ExpenseApproved(expenseProposalCounter);
@@ -370,19 +377,22 @@ contract YourContract {
 		ExpenseProposal storage expenseProposal = expenseProposals[expenseID];
 		if (expenseProposal.recipient == address(0))
 			revert ExpenseProposalNotFound();
-		if (!expenseProposal.approved) revert ExpenseNotApproved();
-		if (block.timestamp < expenseProposal.settlementDate)
-			revert CannotSettleBeforeDate();
+		 if (expenseProposal.status != ExpenseStatus.Approved) {
+        revert ExpenseNotApproved();
+    }
+
 
 		if (toSettle) {
 			(bool success, ) = payable(expenseProposal.recipient).call{
 				value: expenseProposal.amount
 			}("");
 			require(success, "TransferFailed");
-			earmarkedFunds -= expenseProposal.amount; 
-		} else {
-
 			earmarkedFunds -= expenseProposal.amount;
+			expenseProposal.status = ExpenseStatus.Settled;
+		} else {
+			
+			earmarkedFunds -= expenseProposal.amount;
+			expenseProposal.status = ExpenseStatus.Cancelled;
 		}
 
 		uint256 lastExpenseID = expenseProposalIDs[
@@ -397,29 +407,7 @@ contract YourContract {
 		emit ExpenseSettled(expenseID, toSettle);
 	}
 
-  
-	function clearExpiredProposals() external onlyAdmin {
-		for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
-			uint256 expenseID = expenseProposalIDs[i];
-			ExpenseProposal storage proposal = expenseProposals[expenseID];
 
-			if (
-				block.timestamp > proposal.settlementDate + 1 days &&
-				!proposal.approved
-			) {
-				earmarkedFunds -= proposal.amount;
-				delete expenseProposals[expenseID];
-
-				for (uint256 j = i; j < expenseProposalIDs.length - 1; j++) {
-					expenseProposalIDs[j] = expenseProposalIDs[j + 1];
-				}
-
-				expenseProposalIDs.pop();
-				i--;
-			}
-			emit ClearedExpiredExpenseProposal(expenseID, proposal.amount);
-		}
-	}
 
 	function issueInvoice(
 		address payable _payor,
@@ -459,7 +447,7 @@ contract YourContract {
 
 		grossReceipts += msg.value;
 
-	
+		// Remove the invoice ID from the array
 		uint256 indexToRemove = invoiceIndex[invoiceID];
 		uint256 lastInvoiceID = invoiceIDs[invoiceIDs.length - 1];
 
