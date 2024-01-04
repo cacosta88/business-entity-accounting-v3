@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       abi: [
         {
           inputs: [
@@ -585,13 +585,6 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "clearExpiredProposals",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
           name: "closePeriodProposalCounter",
           outputs: [
             {
@@ -916,14 +909,9 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "bool",
-              name: "approved",
-              type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "settlementDate",
-              type: "uint256",
+              internalType: "enum YourContract.ExpenseStatus",
+              name: "status",
+              type: "uint8",
             },
           ],
           stateMutability: "view",

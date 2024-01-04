@@ -776,7 +776,7 @@ contract YourContract {
 			);
 			expenseProposalsArray[i][2] = expproposal.amount;
 			expenseProposalsArray[i][3] = expproposal.votes;
-			expenseProposalsArray[i][4] = expproposal.approved ? 1 : 0;
+			expenseProposalsArray[i][4] = uint256(expproposal.status);
 		}
 
 		return expenseProposalsArray;
@@ -791,8 +791,8 @@ contract YourContract {
  
         uint256 unapprovedCount = 0;
         for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
-            if (!expenseProposals[expenseProposalIDs[i]].approved) {
-                unapprovedCount++;
+            if (expenseProposals[expenseProposalIDs[i]].status == ExpenseStatus.Proposed) {
+				unapprovedCount++;
             }
         }
 
@@ -803,7 +803,7 @@ contract YourContract {
 
         uint256 currentIndex = 0;
         for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
-            if (!expenseProposals[expenseProposalIDs[i]].approved) {
+            if (expenseProposals[expenseProposalIDs[i]].status == ExpenseStatus.Proposed) {
                 expenseProposalDescriptions[currentIndex] =
                     expenseProposals[expenseProposalIDs[i]].description;
                 currentIndex++;
@@ -827,7 +827,7 @@ contract YourContract {
 				expenseProposalIDs[i]
 			];
 
-			if (expproposal.approved) {
+			if (expproposal.status == ExpenseStatus.Approved) {
 				approvedExpenseProposals[i] = new uint256[](5);
 				approvedExpenseProposals[i][0] = expenseProposalIDs[i];
 				approvedExpenseProposals[i][1] = uint256(
@@ -835,7 +835,7 @@ contract YourContract {
 				);
 				approvedExpenseProposals[i][2] = expproposal.amount;
 				approvedExpenseProposals[i][3] = expproposal.votes;
-				approvedExpenseProposals[i][4] = expproposal.approved ? 1 : 0;
+				approvedExpenseProposals[i][4] = uint256(expproposal.status);
 			}
 		}
 
