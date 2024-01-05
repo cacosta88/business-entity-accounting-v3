@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
-import { Capitaladjvote, ExpAdjVote } from "~~/components/scaffold-eth";
+import { Capitaladjvote, ExpAdjVote, ExpCancel, ExpSettle } from "~~/components/scaffold-eth";
 import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 type OwnerState = {
@@ -1552,7 +1552,9 @@ const Home: NextPage = () => {
                                   .map((expenseProposal: any, index: number) => (
                                     <tr key={expenseProposal.id} className="hover:bg-gray-100">
                                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <ExpAdjVote proposalID={expenseProposal.id} />
+                                        <ExpSettle proposalID={expenseProposal.id} />
+                                        <br />
+                                        <ExpCancel proposalID={expenseProposal.id} />
                                       </td>
                                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {arrayOfExpenseApprovedDescriptionsArray[index]}
