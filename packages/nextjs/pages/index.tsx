@@ -580,6 +580,38 @@ const Home: NextPage = () => {
     }
   }, [arrayOfExpenseApprovedDescriptions]);
 
+  //get the event history for event ExpenseSettled
+
+  const { data: ExpenseSettledEvents } = useScaffoldEventHistory({
+    contractName: "YourContract",
+    eventName: "ExpenseSettled",
+    fromBlock: BigInt(0),
+    watch: true,
+
+    blockData: true,
+    transactionData: true,
+    receiptData: true,
+  });
+
+  const [ExpenseSettledEventsArray, setExpenseSettledEventsArray] = useState<any>([]);
+
+  useEffect(() => {
+    if (ExpenseSettledEvents) {
+      const parsedEvents = ExpenseSettledEvents.map((event: any) => {
+        return {
+          expenseID: Number(event.args.expenseID),
+          description: event.args.description,
+          recipient: event.args.recipient,
+          amount: Number(event.args.amount) / 1e18,
+          votes: Number(event.args.votes),
+          status: Number(event.args.status),
+        };
+      });
+
+      setExpenseSettledEventsArray(parsedEvents);
+    }
+  }, [ExpenseSettledEvents]);
+
   return (
     <>
       <MetaHeader />
@@ -1580,7 +1612,81 @@ const Home: NextPage = () => {
                             </table>
                           </div>
                         )}
-                        {expensesTab === 4 && <div>Content for Paid Expenses</div>}
+                        {expensesTab === 4 && (
+                          <div>
+                            <div>
+                              <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Expense ID
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Expense Description
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Expense Recipient
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Expense Amount
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Votes
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Status
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                  {ExpenseSettledEventsArray.map((expenseProposal: any, index: number) => (
+                                    <tr key={index} className="hover:bg-gray-100">
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.expenseID}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.description}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.recipient}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.amount}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.votes}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.status === 0 && "Proposed"}
+                                        {expenseProposal.status === 1 && "Approved"}
+                                        {expenseProposal.status === 2 && "Settled"}
+                                        {expenseProposal.status === 3 && "Canceled"}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

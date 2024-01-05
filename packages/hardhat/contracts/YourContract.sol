@@ -87,7 +87,14 @@ contract YourContract {
 		uint256 voteWeight
 	);
 	event ExpenseApproved(uint256 indexed expenseID);
-	event ExpenseSettled(uint256 indexed expenseID, bool toSettle);
+	event ExpenseSettled(
+		uint256 indexed expenseID,
+		string description,
+		address recipient,
+		uint256 amount,
+		uint256 votes,
+		ExpenseStatus status
+	);
 	event InvoiceIssued(
 		uint256 indexed invoiceID,
 		address payor,
@@ -389,6 +396,7 @@ contract YourContract {
 			require(success, "TransferFailed");
 			earmarkedFunds -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Settled;
+			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status);
 		} else {
 			
 			earmarkedFunds -= expenseProposal.amount;
@@ -405,7 +413,7 @@ contract YourContract {
 		expenseProposalIDs.pop();
 
 		delete expenseProposals[expenseID];
-		emit ExpenseSettled(expenseID, toSettle);
+		
 	}
 
 
