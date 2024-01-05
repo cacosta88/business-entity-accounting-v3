@@ -392,6 +392,7 @@ contract YourContract {
 		} else {
 			
 			earmarkedFunds -= expenseProposal.amount;
+			totalExpenses -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Cancelled;
 		}
 
