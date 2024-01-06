@@ -107,13 +107,15 @@ contract YourContract {
 		address payor,
 		uint256 amount,
 		string description,
-		uint256 period
+		uint256 period,
+		uint256 accountingPeriod
 	);
 	event ClosePeriodProposed(
 		uint256 indexed proposalID,
 		uint256 earnedRevenuePercentage
 	);
 	event ClosePeriodVoted(address indexed owner, uint256 proposalID);
+
 	event AccountingPeriodClosed(
 		uint256 indexed proposalID,
 		uint256 startTime,
@@ -456,7 +458,7 @@ contract YourContract {
 
 		grossReceipts += msg.value;
 
-		// Remove the invoice ID from the array
+
 		uint256 indexToRemove = invoiceIndex[invoiceID];
 		uint256 lastInvoiceID = invoiceIDs[invoiceIDs.length - 1];
 
@@ -469,7 +471,8 @@ contract YourContract {
 			msg.sender,
 			msg.value,
 			invoice.description,
-			invoice.period
+			invoice.period,
+			closePeriodProposalCounter + 1
 		);
 	}
 

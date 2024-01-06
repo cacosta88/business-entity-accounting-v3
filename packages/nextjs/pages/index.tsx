@@ -474,7 +474,7 @@ const Home: NextPage = () => {
           amount: Number(event.args.amount) / 1e18,
           description: event.args.description,
           period: Number(event.args.period),
-          timestamp: Number(event.block.timestamp) * 1000,
+          currentperiod: Number(event.args.accountingPeriod),
         };
       });
 
@@ -580,8 +580,6 @@ const Home: NextPage = () => {
     }
   }, [arrayOfExpenseApprovedDescriptions]);
 
-  //get the event history for event ExpenseSettled
-
   const { data: ExpenseSettledEvents } = useScaffoldEventHistory({
     contractName: "YourContract",
     eventName: "ExpenseSettled",
@@ -677,7 +675,7 @@ const Home: NextPage = () => {
                   }}
                 >
                   <div
-                    ref={modalRef} // Attach the ref here
+                    ref={modalRef}
                     style={{
                       backgroundColor: "white",
                       padding: "20px",
@@ -1134,6 +1132,12 @@ const Home: NextPage = () => {
                               >
                                 Invoice Period
                               </th>
+                              <th
+                                scope="col"
+                                className="px-6 pys-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Period Paid
+                              </th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
@@ -1153,6 +1157,9 @@ const Home: NextPage = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                   {invoice.period}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {invoice.currentperiod}
                                 </td>
                               </tr>
                             ))}
