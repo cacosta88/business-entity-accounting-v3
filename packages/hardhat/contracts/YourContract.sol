@@ -33,7 +33,8 @@ contract YourContract {
 		address recipient;
 		uint256 amount;
 		uint256 votes;
-		ExpenseStatus status; 
+		ExpenseStatus status;
+		uint256 period; 
 	}
 
 
@@ -322,6 +323,7 @@ contract YourContract {
 		expenseProposal.recipient = recipient;
 		expenseProposal.amount = amount;
 		expenseProposal.status = ExpenseStatus.Proposed;
+		expenseProposal.period = closePeriodProposalCounter + 1;
 	
 		uint256 initialExpenseProposalVotes = calculateOwnershipPercentage(
 			owners[msg.sender].capital
@@ -778,7 +780,7 @@ contract YourContract {
 				expenseProposalIDs[i]
 			];
 
-			expenseProposalsArray[i] = new uint256[](5);
+			expenseProposalsArray[i] = new uint256[](6);
 			expenseProposalsArray[i][0] = expenseProposalIDs[i];
 		
 		
@@ -789,6 +791,7 @@ contract YourContract {
 			expenseProposalsArray[i][2] = expproposal.amount;
 			expenseProposalsArray[i][3] = expproposal.votes;
 			expenseProposalsArray[i][4] = uint256(expproposal.status);
+			expenseProposalsArray[i][5] = expproposal.period;
 		}
 
 		return expenseProposalsArray;
@@ -840,7 +843,7 @@ contract YourContract {
 			];
 
 			if (expproposal.status == ExpenseStatus.Approved) {
-				approvedExpenseProposals[i] = new uint256[](5);
+				approvedExpenseProposals[i] = new uint256[](6);
 				approvedExpenseProposals[i][0] = expenseProposalIDs[i];
 				approvedExpenseProposals[i][1] = uint256(
 					uint160(expproposal.recipient)
@@ -848,13 +851,14 @@ contract YourContract {
 				approvedExpenseProposals[i][2] = expproposal.amount;
 				approvedExpenseProposals[i][3] = expproposal.votes;
 				approvedExpenseProposals[i][4] = uint256(expproposal.status);
+				approvedExpenseProposals[i][5] = expproposal.period;
 			}
 		}
 
 		return approvedExpenseProposals;
 	}
 
-	//now the descriptions for the approved expenses
+
 	function getApprovedExpenseProposalDescriptions()
 		external
 		view

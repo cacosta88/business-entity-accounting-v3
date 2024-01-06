@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+      address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
       abi: [
         {
           inputs: [
@@ -942,6 +942,11 @@ const deployedContracts = {
               internalType: "enum YourContract.ExpenseStatus",
               name: "status",
               type: "uint8",
+            },
+            {
+              internalType: "uint256",
+              name: "period",
+              type: "uint256",
             },
           ],
           stateMutability: "view",

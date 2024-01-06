@@ -535,7 +535,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (arrayOfExpenseProposals) {
       const arrayOfExpenseProposals_ = arrayOfExpenseProposals.map((expproposalArray: any) => {
-        const [id, recipient, amount, votes, status] = expproposalArray;
+        const [id, recipient, amount, votes, status, period] = expproposalArray;
 
         return {
           id: Number(id),
@@ -544,6 +544,7 @@ const Home: NextPage = () => {
           amount: (Number(amount) / 1e18).toFixed(4),
           votes: Number(votes),
           status: Number(status),
+          period: Number(period),
         };
       });
 
@@ -1505,6 +1506,12 @@ const Home: NextPage = () => {
                                   >
                                     Status
                                   </th>
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Period Issued
+                                  </th>
                                 </tr>
                               </thead>
 
@@ -1533,6 +1540,9 @@ const Home: NextPage = () => {
                                         {expenseProposal.status === 1 && "Approved"}
                                         {expenseProposal.status === 2 && "Settled"}
                                         {expenseProposal.status === 3 && "Canceled"}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.period}
                                       </td>
                                     </tr>
                                   ))}
