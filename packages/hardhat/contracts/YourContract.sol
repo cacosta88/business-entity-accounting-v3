@@ -94,7 +94,9 @@ contract YourContract {
 		address recipient,
 		uint256 amount,
 		uint256 votes,
-		ExpenseStatus status
+		ExpenseStatus status,
+		uint256 period,
+		uint256 accountingPeriod
 	);
 	event InvoiceIssued(
 		uint256 indexed invoiceID,
@@ -400,7 +402,7 @@ contract YourContract {
 			require(success, "TransferFailed");
 			earmarkedFunds -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Settled;
-			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status);
+			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status, expenseProposal.period, closePeriodProposalCounter + 1);
 		} else {
 			
 			earmarkedFunds -= expenseProposal.amount;

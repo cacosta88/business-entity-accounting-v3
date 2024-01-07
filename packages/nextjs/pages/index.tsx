@@ -604,6 +604,8 @@ const Home: NextPage = () => {
           amount: Number(event.args.amount) / 1e18,
           votes: Number(event.args.votes),
           status: Number(event.args.status),
+          period: Number(event.args.period),
+          accountingPeriod: Number(event.args.accountingPeriod),
         };
       });
 
@@ -1592,6 +1594,13 @@ const Home: NextPage = () => {
                                   >
                                     Status
                                   </th>
+
+                                  <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                  >
+                                    Period Issued
+                                  </th>
                                 </tr>
                               </thead>
 
@@ -1622,6 +1631,9 @@ const Home: NextPage = () => {
                                         {expenseProposal.status === 1 && "Approved"}
                                         {expenseProposal.status === 2 && "Settled"}
                                         {expenseProposal.status === 3 && "Canceled"}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.period}
                                       </td>
                                     </tr>
                                   ))}
@@ -1671,6 +1683,18 @@ const Home: NextPage = () => {
                                     >
                                       Status
                                     </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Period Issued
+                                    </th>
+                                    <th
+                                      scope="col"
+                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                      Period Paid
+                                    </th>
                                   </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -1696,6 +1720,13 @@ const Home: NextPage = () => {
                                         {expenseProposal.status === 1 && "Approved"}
                                         {expenseProposal.status === 2 && "Settled"}
                                         {expenseProposal.status === 3 && "Canceled"}
+                                      </td>
+
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.period}
+                                      </td>
+                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {expenseProposal.accountingPeriod}
                                       </td>
                                     </tr>
                                   ))}
