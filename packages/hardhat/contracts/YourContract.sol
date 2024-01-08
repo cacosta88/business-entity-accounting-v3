@@ -508,6 +508,7 @@ contract YourContract {
 	function voteForClosePeriodProposal(
 		uint256 proposalID
 	) external onlyOwners {
+		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
 			proposalID
 		];
@@ -529,6 +530,7 @@ contract YourContract {
 	function executeCloseAccountingPeriod(
 		uint256 proposalID
 	) external onlyOwners {
+		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
 			proposalID
 		];
