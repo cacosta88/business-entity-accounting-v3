@@ -613,6 +613,26 @@ const Home: NextPage = () => {
     }
   }, [ExpenseSettledEvents]);
 
+  const [isPeriodCloseModalOpen, setIsPeriodCloseModalOpen] = useState(false);
+  const periodCloseModalRef = useRef<HTMLDivElement>(null);
+  const openPeriodCloseModal = () => setIsPeriodCloseModalOpen(true);
+  const closePeriodCloseModal = () => setIsPeriodCloseModalOpen(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (periodCloseModalRef.current && !periodCloseModalRef.current.contains(event.target as Node)) {
+        closePeriodCloseModal();
+      }
+    };
+    if (isPeriodCloseModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isPeriodCloseModalOpen]);
+
   return (
     <>
       <MetaHeader />
@@ -1641,6 +1661,7 @@ const Home: NextPage = () => {
                             </table>
                           </div>
                         )}
+
                         {expensesTab === 4 && (
                           <div>
                             <div>
@@ -1738,10 +1759,20 @@ const Home: NextPage = () => {
                       </div>
                     </div>
                   )}
+
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                      <button
+                        onClick={openPeriodCloseModal}
+                        style={{ marginRight: "8px" }}
+                        className="px-2 py-1 text-xs font-medium leading-none text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                      >
+                        Manage <br /> Period <br />
+                        Close
+                      </button>
                       Projected Operating Income
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {(
                         (grossReceipts * (estimatedEarnedRevenuePercentageNumber / 100) - totalExpenses) /
@@ -1752,6 +1783,55 @@ const Home: NextPage = () => {
                 </tbody>
               </table>
             </div>
+            {isPeriodCloseModalOpen && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: "10%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1000,
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  padding: "20px",
+                  borderRadius: "10px",
+                }}
+              >
+                <div
+                  ref={periodCloseModalRef}
+                  style={{
+                    backgroundColor: "white",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    color: "black",
+                    backgroundImage: "url(background1.png)",
+                  }}
+                >
+                  <button onClick={closePeriodCloseModal} className="btn btn-sm btn-circle absolute right-2 top-2">
+                    ✕
+                  </button>
+
+                  <div className="flex justify-center">
+                    {["Propose Period Close", "Vote on Period Close", "Execute Period Close"].map((tabText, index) => (
+                      <a
+                        key={index}
+                        className={`tab tab-lg ${expensesTab === index + 1 ? "tab-active" : ""}`}
+                        onClick={() => handleExpensesTabChange(index + 1)}
+                        style={{
+                          ...(expensesTab === index + 1
+                            ? { ...selectedTabStyle, backgroundPosition: "center" }
+                            : { ...unselectedTabStyle, backgroundPosition: "center" }),
+                          backgroundImage: expensesTab === index + 1 ? "url(button2.png)" : "none",
+                          filter: expensesTab === index + 1 ? "brightness(100%)" : "none",
+                        }}
+                      >
+                        {tabText}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
               <p>Placeholder Text 2</p>
             </div>
