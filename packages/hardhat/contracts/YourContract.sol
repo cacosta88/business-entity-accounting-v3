@@ -481,13 +481,13 @@ contract YourContract {
 	}
 
 	function proposeCloseAccountingPeriod(
-		uint256 earnedRevenuePercentage
 	) external onlyOwners {
+		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 		closePeriodProposalCounter++;
 		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
 			closePeriodProposalCounter
 		];
-		proposal.earnedRevenuePercentage = earnedRevenuePercentage;
+		proposal.earnedRevenuePercentage = estimatedEarnedRevenuePercentage;
 		uint256 initialOwnershipPercentage = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
@@ -501,7 +501,7 @@ contract YourContract {
 
 		emit ClosePeriodProposed(
 			closePeriodProposalCounter,
-			earnedRevenuePercentage
+			estimatedEarnedRevenuePercentage
 		);
 	}
 

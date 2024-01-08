@@ -615,8 +615,13 @@ const Home: NextPage = () => {
 
   const [isPeriodCloseModalOpen, setIsPeriodCloseModalOpen] = useState(false);
   const periodCloseModalRef = useRef<HTMLDivElement>(null);
+  const [periodCloseTab, setPeriodCloseTab] = useState(1);
   const openPeriodCloseModal = () => setIsPeriodCloseModalOpen(true);
   const closePeriodCloseModal = () => setIsPeriodCloseModalOpen(false);
+
+  const handlePeriodCloseTabChange = (tabName: any) => {
+    setPeriodCloseTab(tabName);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -632,6 +637,13 @@ const Home: NextPage = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isPeriodCloseModalOpen]);
+
+  //write function for period close
+
+  const { writeAsync: proposePeriodClose } = useScaffoldContractWrite({
+    contractName: "YourContract",
+    functionName: "proposeCloseAccountingPeriod",
+  });
 
   return (
     <>
@@ -1814,20 +1826,37 @@ const Home: NextPage = () => {
                     {["Propose Period Close", "Vote on Period Close", "Execute Period Close"].map((tabText, index) => (
                       <a
                         key={index}
-                        className={`tab tab-lg ${expensesTab === index + 1 ? "tab-active" : ""}`}
-                        onClick={() => handleExpensesTabChange(index + 1)}
+                        className={`tab tab-lg ${periodCloseTab === index + 1 ? "tab-active" : ""}`}
+                        onClick={() => handlePeriodCloseTabChange(index + 1)}
                         style={{
-                          ...(expensesTab === index + 1
+                          ...(periodCloseTab === index + 1
                             ? { ...selectedTabStyle, backgroundPosition: "center" }
                             : { ...unselectedTabStyle, backgroundPosition: "center" }),
-                          backgroundImage: expensesTab === index + 1 ? "url(button2.png)" : "none",
-                          filter: expensesTab === index + 1 ? "brightness(100%)" : "none",
+                          backgroundImage: periodCloseTab === index + 1 ? "url(button2.png)" : "none",
+                          filter: periodCloseTab === index + 1 ? "brightness(100%)" : "none",
                         }}
                       >
                         {tabText}
                       </a>
                     ))}
                   </div>
+                  {/* Content for propose period close tab */}
+
+                  {periodCloseTab === 1 && (
+                    <div style={periodCloseTab === 1 ? activeTabContentStyle : tabContentStyle}>
+                      <br />
+
+                      <br />
+
+                      <br />
+
+                      <button className="btn btn-primary" onClick={() => proposePeriodClose()}>
+                        Propose Period Close
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Content for vote on period close tab */}
                 </div>
               </div>
             )}
