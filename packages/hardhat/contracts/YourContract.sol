@@ -174,6 +174,7 @@ contract YourContract {
 		public closePeriodProposalVoters;
 
 	uint256 public currentPeriodStartTime;
+	uint256 public currentPeriod = 1;
 
 	constructor(
 		address[] memory initialOwners,
