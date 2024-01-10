@@ -564,6 +564,8 @@ contract YourContract {
 			}
 		}
 
+
+
 		uint256 endTime = block.timestamp;
 
 		uint256 lastProposalID = closePeriodProposalIDs[
@@ -575,6 +577,8 @@ contract YourContract {
 		closePeriodProposalIDs.pop();
 
 		delete closePeriodProposals[proposalID];
+
+		currentPeriod++;
 
 		emit AccountingPeriodClosed(
 			proposalID,
