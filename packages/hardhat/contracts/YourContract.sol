@@ -195,6 +195,7 @@ contract YourContract {
 			);
 			ownerAddresses.push(initialOwners[i]);
 		}
+		currentPeriodStartTime = block.timestamp;
 	}
 
 	modifier onlyAdmin() {
