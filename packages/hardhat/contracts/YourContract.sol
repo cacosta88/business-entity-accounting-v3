@@ -121,6 +121,7 @@ contract YourContract {
 
 	event AccountingPeriodClosed(
 		uint256 indexed proposalID,
+		uint256 period,
 		uint256 startTime,
 		uint256 endTime,
 		uint256 earnedRevenuePercentage,
@@ -582,6 +583,7 @@ contract YourContract {
 
 		emit AccountingPeriodClosed(
 			proposalID,
+			currentPeriod,
 			currentPeriodStartTime,
 			endTime,
 			proposal.earnedRevenuePercentage,
