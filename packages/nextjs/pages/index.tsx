@@ -638,12 +638,24 @@ const Home: NextPage = () => {
     };
   }, [isPeriodCloseModalOpen]);
 
-  //write function for period close
-
   const { writeAsync: proposePeriodClose } = useScaffoldContractWrite({
     contractName: "YourContract",
     functionName: "proposeCloseAccountingPeriod",
   });
+
+  const { data: currentPeriod } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "currentPeriod",
+  });
+
+  const [currentPeriodNumber, setCurrentPeriodNumber] = useState<number>(0);
+
+  useEffect(() => {
+    if (currentPeriod) {
+      const currentPeriodNumber = Number(currentPeriod);
+      setCurrentPeriodNumber(currentPeriodNumber);
+    }
+  }, [currentPeriod]);
 
   return (
     <>
@@ -1298,7 +1310,7 @@ const Home: NextPage = () => {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Income Statement
+                      Income Statement for period #{currentPeriodNumber}
                     </th>
                     <th></th> {/* Blank cell added */}
                   </tr>
