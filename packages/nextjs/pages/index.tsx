@@ -1310,9 +1310,15 @@ const Home: NextPage = () => {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Income Statement for period #{currentPeriodNumber}
+                      Income Statement
                     </th>
-                    <th></th> {/* Blank cell added */}
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Period: {currentPeriodNumber}{" "}
+                    </th>{" "}
+                    {/* Blank cell added */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
