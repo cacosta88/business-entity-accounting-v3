@@ -328,7 +328,7 @@ contract YourContract {
 		expenseProposal.recipient = recipient;
 		expenseProposal.amount = amount;
 		expenseProposal.status = ExpenseStatus.Proposed;
-		expenseProposal.period = closePeriodProposalCounter + 1;
+		expenseProposal.period = currentPeriod;
 	
 		uint256 initialExpenseProposalVotes = calculateOwnershipPercentage(
 			owners[msg.sender].capital
@@ -405,7 +405,7 @@ contract YourContract {
 			require(success, "TransferFailed");
 			earmarkedFunds -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Settled;
-			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status, expenseProposal.period, closePeriodProposalCounter + 1);
+			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status, expenseProposal.period, currentPeriod);
 		} else {
 			
 			earmarkedFunds -= expenseProposal.amount;
@@ -440,7 +440,7 @@ contract YourContract {
 		newInvoice.payor = _payor;
 		newInvoice.amount = _amount;
 		newInvoice.description = _description;
-		newInvoice.period = closePeriodProposalCounter + 1;
+		newInvoice.period = currentPeriod;
 
 		invoiceIDs.push(invoiceCounter);
 		invoiceIndex[invoiceCounter] = invoiceIDs.length - 1;
@@ -451,7 +451,7 @@ contract YourContract {
 			_payor,
 			_amount,
 			_description,
-			closePeriodProposalCounter + 1
+			currentPeriod
 		);
 	}
 
@@ -479,7 +479,7 @@ contract YourContract {
 			msg.value,
 			invoice.description,
 			invoice.period,
-			closePeriodProposalCounter + 1
+			currentPeriod
 		);
 	}
 
