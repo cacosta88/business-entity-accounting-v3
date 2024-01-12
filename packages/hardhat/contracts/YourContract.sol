@@ -68,6 +68,7 @@ contract YourContract {
 	error InvoiceAlreadyPaid();
 	error ClosePeriodProposalNotFound();
 	error OnlyPayorCanPayInvoice();
+	error ProposalAlreadyExists();
 
 	event CapitalDeposited(address indexed ownerAddress, uint256 amount);
 	event CapitalAdjustmentProposed(
@@ -141,7 +142,7 @@ contract YourContract {
 	mapping(address => Owner) public owners;
 	address[] public ownerAddresses;
 	mapping(uint256 => CapitalAdjustmentProposal)
-		public capitalAdjustmentProposals;
+	public capitalAdjustmentProposals;
 	mapping(uint256 => ExpenseProposal) public expenseProposals;
 	uint256[] public expenseProposalIDs;
 	mapping(uint256 => uint256) public expenseProposalIndex;
@@ -154,7 +155,7 @@ contract YourContract {
 	uint256 public estimatedEarnedRevenuePercentage;
 	uint256 public totalExpenses;
 	mapping(uint256 => CloseAccountingPeriodProposal)
-		public closePeriodProposals;
+	public closePeriodProposals;
 	uint256[] public closePeriodProposalIDs;
 	mapping(uint256 => uint256) public closePeriodProposalIndex;
 
@@ -169,13 +170,15 @@ contract YourContract {
 	uint256 public closePeriodProposalCounter = 0;
 
 	mapping(uint256 => mapping(address => bool))
-		public capitalAdjustmentProposalVoters;
+	public capitalAdjustmentProposalVoters;
 	mapping(uint256 => mapping(address => bool)) public expenseProposalVoters;
 	mapping(uint256 => mapping(address => bool))
-		public closePeriodProposalVoters;
+	public closePeriodProposalVoters;
 
 	uint256 public currentPeriodStartTime;
 	uint256 public currentPeriod = 1;
+	bool public isClosePeriodProposalActive;
+
 
 	constructor(
 		address[] memory initialOwners,
@@ -485,6 +488,7 @@ contract YourContract {
 
 	function proposeCloseAccountingPeriod(
 	) external onlyOwners {
+		if (isClosePeriodProposalActive) revert ProposalAlreadyExists();
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 		closePeriodProposalCounter++;
 		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
@@ -501,6 +505,8 @@ contract YourContract {
 		}
 
 		closePeriodProposalIDs.push(closePeriodProposalCounter);
+
+		isClosePeriodProposalActive = true;
 
 		emit ClosePeriodProposed(
 			closePeriodProposalCounter,
@@ -524,6 +530,8 @@ contract YourContract {
 		proposal.votes += voteCast;
 
 		if (voteCast > 50) {
+			executeCloseAccountingPeriod(proposalID);
+        	isClosePeriodProposalActive = false;
 			proposal.approved = true;
 		}
 
@@ -532,7 +540,7 @@ contract YourContract {
 
 	function executeCloseAccountingPeriod(
 		uint256 proposalID
-	) external onlyOwners {
+	) internal onlyOwners {
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
 			proposalID
