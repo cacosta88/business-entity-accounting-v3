@@ -46,12 +46,6 @@ contract YourContract {
 		uint256 period;
 	}
 
-	struct CloseAccountingPeriodProposal {
-		uint256 earnedRevenuePercentage;
-		uint256 votes;
-		bool approved;
-	}
-
 	error OnlyAdmin();
 	error OnlyOwners();
 	error MismatchOwnersCapitalRequirements();
@@ -121,8 +115,7 @@ contract YourContract {
 	event ClosePeriodVoted(address indexed owner, uint256 proposalID);
 
 	event AccountingPeriodClosed(
-		uint256 indexed proposalID,
-		uint256 period,
+		uint256 indexed period,
 		uint256 startTime,
 		uint256 endTime,
 		uint256 earnedRevenuePercentage,
@@ -154,8 +147,6 @@ contract YourContract {
 	uint256 public grossReceipts;
 	uint256 public estimatedEarnedRevenuePercentage;
 	uint256 public totalExpenses;
-	mapping(uint256 => CloseAccountingPeriodProposal)
-	public closePeriodProposals;
 	uint256[] public closePeriodProposalIDs;
 	mapping(uint256 => uint256) public closePeriodProposalIndex;
 
@@ -167,7 +158,7 @@ contract YourContract {
 
 	uint256 public invoiceCounter = 0;
 	uint256 public expenseProposalCounter = 0;
-	uint256 public closePeriodProposalCounter = 0;
+	
 
 	mapping(uint256 => mapping(address => bool))
 	public capitalAdjustmentProposalVoters;
@@ -178,6 +169,8 @@ contract YourContract {
 	uint256 public currentPeriodStartTime;
 	uint256 public currentPeriod = 1;
 	bool public isClosePeriodProposalActive;
+	bool public isClosePeriodProposedApproved;
+	uint256 public closePeriodVotes;
 
 
 	constructor(
@@ -490,65 +483,51 @@ contract YourContract {
 	) external onlyOwners {
 		if (isClosePeriodProposalActive) revert ProposalAlreadyExists();
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
-		closePeriodProposalCounter++;
-		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
-			closePeriodProposalCounter
-		];
-		proposal.earnedRevenuePercentage = estimatedEarnedRevenuePercentage;
+	
+		
 		uint256 initialOwnershipPercentage = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
-		proposal.votes = initialOwnershipPercentage;
+
+		closePeriodVotes += initialOwnershipPercentage;
 
 		if (initialOwnershipPercentage > 50) {
-			proposal.approved = true;
-		}
-
-		closePeriodProposalIDs.push(closePeriodProposalCounter);
+			isClosePeriodProposedApproved = true;
+			executeCloseAccountingPeriod();
+		} else {
 
 		isClosePeriodProposalActive = true;
+		}
 
-		emit ClosePeriodProposed(
-			closePeriodProposalCounter,
-			estimatedEarnedRevenuePercentage
-		);
 	}
 
 	function voteForClosePeriodProposal(
-		uint256 proposalID
 	) external onlyOwners {
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
-		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
-			proposalID
-		];
-		if (proposal.earnedRevenuePercentage == 0)
-			revert ClosePeriodProposalNotFound();
 
 		uint256 voteCast = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
-		proposal.votes += voteCast;
 
-		if (voteCast > 50) {
-			executeCloseAccountingPeriod(proposalID);
+		closePeriodVotes += voteCast;
+
+
+
+		if (closePeriodVotes > 50) {
+			executeCloseAccountingPeriod();
         	isClosePeriodProposalActive = false;
-			proposal.approved = true;
 		}
 
-		emit ClosePeriodVoted(msg.sender, proposalID);
+		emit ClosePeriodVoted(msg.sender, currentPeriod);
 	}
 
 	function executeCloseAccountingPeriod(
-		uint256 proposalID
 	) internal onlyOwners {
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
-		CloseAccountingPeriodProposal storage proposal = closePeriodProposals[
-			proposalID
-		];
-		if (proposal.approved == false) revert ClosePeriodProposalNotFound();
+
 
 		uint256 earnedGrossReceipts = (grossReceipts *
-			proposal.earnedRevenuePercentage) / 100;
+			estimatedEarnedRevenuePercentage) / 100;
 		uint256 distributableIncome = 0;
 		if (earnedGrossReceipts > totalExpenses) {
 			distributableIncome = earnedGrossReceipts - totalExpenses;
@@ -578,24 +557,21 @@ contract YourContract {
 
 		uint256 endTime = block.timestamp;
 
-		uint256 lastProposalID = closePeriodProposalIDs[
-			closePeriodProposalIDs.length - 1
-		];
-		uint256 proposalIndex = closePeriodProposalIndex[proposalID];
-		closePeriodProposalIDs[proposalIndex] = lastProposalID;
-		closePeriodProposalIndex[lastProposalID] = proposalIndex;
-		closePeriodProposalIDs.pop();
-
-		delete closePeriodProposals[proposalID];
-
 		currentPeriod++;
 
+
+		uint256 earnedRevenuePercentage = estimatedEarnedRevenuePercentage;
+	
+		estimatedEarnedRevenuePercentage = 0;
+		isClosePeriodProposalActive = false;
+		isClosePeriodProposedApproved = false;
+		closePeriodVotes = 0;
+
 		emit AccountingPeriodClosed(
-			proposalID,
 			currentPeriod,
 			currentPeriodStartTime,
 			endTime,
-			proposal.earnedRevenuePercentage,
+			earnedRevenuePercentage,
 			distributableIncome,
 			earnedGrossReceipts,
 			totalExpenses,

@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+      address: "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
       abi: [
         {
           inputs: [
@@ -115,12 +115,6 @@ const deployedContracts = {
           inputs: [
             {
               indexed: true,
-              internalType: "uint256",
-              name: "proposalID",
-              type: "uint256",
-            },
-            {
-              indexed: false,
               internalType: "uint256",
               name: "period",
               type: "uint256",
@@ -637,19 +631,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "closePeriodProposalCounter",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "uint256",
@@ -712,29 +693,13 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
+          inputs: [],
+          name: "closePeriodVotes",
+          outputs: [
             {
               internalType: "uint256",
               name: "",
               type: "uint256",
-            },
-          ],
-          name: "closePeriodProposals",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "earnedRevenuePercentage",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "votes",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "approved",
-              type: "bool",
             },
           ],
           stateMutability: "view",
@@ -1366,6 +1331,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "isClosePeriodProposedApproved",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "address payable",
@@ -1537,13 +1515,7 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "proposalID",
-              type: "uint256",
-            },
-          ],
+          inputs: [],
           name: "voteForClosePeriodProposal",
           outputs: [],
           stateMutability: "nonpayable",
