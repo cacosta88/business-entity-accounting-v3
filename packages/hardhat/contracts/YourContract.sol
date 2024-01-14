@@ -171,6 +171,9 @@ contract YourContract {
 	bool public isClosePeriodProposalActive;
 	uint256 public closePeriodVotes;
 
+	mapping(address => uint256) public pendingWithdrawals;
+
+
 
 	constructor(
 		address[] memory initialOwners,
@@ -545,13 +548,9 @@ contract YourContract {
 				uint256 ownershipPercentage = calculateOwnershipPercentage(
 					owners[currentOwnerAddress].capital
 				);
-				uint256 ownerShare = (distributableIncome *
-					ownershipPercentage) / 100;
+				uint256 ownerShare = (distributableIncome * ownershipPercentage) / 100;
 				if (ownerShare > 0) {
-					(bool success, ) = payable(currentOwnerAddress).call{
-						value: ownerShare
-					}("");
-					if (!success) revert TransferFailed();
+					pendingWithdrawals[currentOwnerAddress] += ownerShare;
 				}
 			}
 		}
@@ -588,6 +587,16 @@ contract YourContract {
 		);
 
 		currentPeriodStartTime = block.timestamp;
+	}
+
+	function withdraw() public onlyOwners {
+		uint256 amount = pendingWithdrawals[msg.sender];
+		require(amount > 0, "No funds to withdraw");
+
+		pendingWithdrawals[msg.sender] = 0;
+
+		(bool success, ) = msg.sender.call{value: amount}("");
+		require(success, "Transfer failed");
 	}
 
 	function setEstimatedEarnedRevenue(
