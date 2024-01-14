@@ -169,7 +169,6 @@ contract YourContract {
 	uint256 public currentPeriodStartTime;
 	uint256 public currentPeriod = 1;
 	bool public isClosePeriodProposalActive;
-	bool public isClosePeriodProposedApproved;
 	uint256 public closePeriodVotes;
 
 
@@ -483,6 +482,7 @@ contract YourContract {
 	) external onlyOwners {
 		if (isClosePeriodProposalActive) revert ProposalAlreadyExists();
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
+
 	
 		
 		uint256 initialOwnershipPercentage = calculateOwnershipPercentage(
@@ -490,9 +490,10 @@ contract YourContract {
 		);
 
 		closePeriodVotes += initialOwnershipPercentage;
+		closePeriodProposalVoters[currentPeriod][msg.sender] = true;
 
 		if (initialOwnershipPercentage > 50) {
-			isClosePeriodProposedApproved = true;
+
 			executeCloseAccountingPeriod();
 		} else {
 
@@ -504,18 +505,22 @@ contract YourContract {
 	function voteForClosePeriodProposal(
 	) external onlyOwners {
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
+		if (closePeriodProposalVoters[currentPeriod][msg.sender])
+			revert CanOnlyVoteOnce();
+		if (!isClosePeriodProposalActive) revert ProposalNotFound();
 
 		uint256 voteCast = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
 
 		closePeriodVotes += voteCast;
+		closePeriodProposalVoters[currentPeriod][msg.sender] = true;
 
 
 
 		if (closePeriodVotes > 50) {
+
 			executeCloseAccountingPeriod();
-        	isClosePeriodProposalActive = false;
 		}
 
 		emit ClosePeriodVoted(msg.sender, currentPeriod);
@@ -523,8 +528,6 @@ contract YourContract {
 
 	function executeCloseAccountingPeriod(
 	) internal onlyOwners {
-		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
-
 
 		uint256 earnedGrossReceipts = (grossReceipts *
 			estimatedEarnedRevenuePercentage) / 100;
@@ -564,8 +567,14 @@ contract YourContract {
 	
 		estimatedEarnedRevenuePercentage = 0;
 		isClosePeriodProposalActive = false;
-		isClosePeriodProposedApproved = false;
 		closePeriodVotes = 0;
+
+		for (uint256 i = 0; i < ownerAddresses.length; i++) {
+			address currentOwnerAddress = ownerAddresses[i];
+			closePeriodProposalVoters[currentPeriod][
+				currentOwnerAddress
+			] = false;
+		}
 
 		emit AccountingPeriodClosed(
 			currentPeriod,
@@ -578,7 +587,6 @@ contract YourContract {
 			grossReceipts
 		);
 
-		estimatedEarnedRevenuePercentage = 0;
 		currentPeriodStartTime = block.timestamp;
 	}
 
