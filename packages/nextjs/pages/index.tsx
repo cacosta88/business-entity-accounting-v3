@@ -657,6 +657,13 @@ const Home: NextPage = () => {
     }
   }, [currentPeriod]);
 
+  //create function to write to voteForClosePeriodProposal, does not take any input
+
+  const { writeAsync: voteForClosePeriodProposal } = useScaffoldContractWrite({
+    contractName: "YourContract",
+    functionName: "voteForClosePeriodProposal",
+  });
+
   return (
     <>
       <MetaHeader />
@@ -1841,7 +1848,7 @@ const Home: NextPage = () => {
                   </button>
 
                   <div className="flex justify-center">
-                    {["Propose Period Close", "Vote on Period Close", "Execute Period Close"].map((tabText, index) => (
+                    {["Propose Period Close", "Vote on Period Close", "Historical"].map((tabText, index) => (
                       <a
                         key={index}
                         className={`tab tab-lg ${periodCloseTab === index + 1 ? "tab-active" : ""}`}
@@ -1864,17 +1871,19 @@ const Home: NextPage = () => {
                     <div style={periodCloseTab === 1 ? activeTabContentStyle : tabContentStyle}>
                       <br />
 
-                      <br />
-
-                      <br />
-
                       <button className="btn btn-primary" onClick={() => proposePeriodClose()}>
                         Propose Period Close
                       </button>
                     </div>
                   )}
 
-                  {/* Content for vote on period close tab */}
+                  {periodCloseTab === 2 && (
+                    <div style={periodCloseTab === 2 ? activeTabContentStyle : tabContentStyle}>
+                      <button className="btn btn-primary" onClick={() => voteForClosePeriodProposal()}>
+                        Vote on Period Close
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
