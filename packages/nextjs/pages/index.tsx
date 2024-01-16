@@ -664,6 +664,41 @@ const Home: NextPage = () => {
     functionName: "voteForClosePeriodProposal",
   });
 
+  //get history for AccountingPeriodClosed
+
+  const { data: AccountingPeriodClosedEvents } = useScaffoldEventHistory({
+    contractName: "YourContract",
+    eventName: "AccountingPeriodClosed",
+    fromBlock: BigInt(0),
+    watch: true,
+
+    blockData: true,
+    transactionData: true,
+    receiptData: true,
+  });
+
+  const [AccountingPeriodClosedEventsArray, setAccountingPeriodClosedEventsArray] = useState<any>([]);
+
+  useEffect(() => {
+    if (AccountingPeriodClosedEvents) {
+      const parsedEvents = AccountingPeriodClosedEvents.map((event: any) => {
+        return {
+          period: Number(event.args.period),
+          startTime: Number(event.args.startTime),
+          endTime: Number(event.args.endTime),
+          earnedRevenuePercentage: Number(event.args.earnedRevenuePercentage),
+          distributableIncome: Number(event.args.distributableIncome),
+          earnedGrossReceipts: Number(event.args.earnedGrossReceipts),
+          totalExpenses: Number(event.args.totalExpenses),
+          grossReceipts: Number(event.args.grossReceipts),
+          timestamp: Number(event.block.timestamp) * 1000,
+        };
+      });
+
+      setAccountingPeriodClosedEventsArray(parsedEvents);
+    }
+  }, [AccountingPeriodClosedEvents]);
+
   return (
     <>
       <MetaHeader />
@@ -1882,6 +1917,77 @@ const Home: NextPage = () => {
                       <button className="btn btn-primary" onClick={() => voteForClosePeriodProposal()}>
                         Vote on Period Close
                       </button>
+                    </div>
+                  )}
+
+                  {periodCloseTab === 3 && (
+                    <div style={periodCloseTab === 3 ? activeTabContentStyle : tabContentStyle}>
+                      <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                        <thead>
+                          <tr className="bg-slate-100">
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Period Number
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Gross Receipts
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Earned Revenue Percentage
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Earned Gross Receipts
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Expenses
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Operating Income
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {AccountingPeriodClosedEventsArray.map((period: any, index: number) => (
+                            <tr key={index} className="hover:bg-gray-100">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {period.period}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {period.grossReceipts / 10 ** 18}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {period.earnedRevenuePercentage}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {period.earnedGrossReceipts / 10 ** 18}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {period.totalExpenses / 10 ** 18}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {period.earnedGrossReceipts / 10 ** 18 - period.totalExpenses / 10 ** 18}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </div>

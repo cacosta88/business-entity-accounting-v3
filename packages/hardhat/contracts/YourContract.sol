@@ -539,8 +539,9 @@ contract YourContract {
 			distributableIncome = earnedGrossReceipts - totalExpenses;
 		}
 
+		uint256 currentGrossReceipts = grossReceipts;
 		grossReceipts -= earnedGrossReceipts;
-		totalExpenses = 0;
+		
 
 		if (distributableIncome > 0) {
 			for (uint i = 0; i < ownerAddresses.length; i++) {
@@ -576,15 +577,16 @@ contract YourContract {
 		}
 
 		emit AccountingPeriodClosed(
-			currentPeriod,
+			currentPeriod-1,
 			currentPeriodStartTime,
 			endTime,
 			earnedRevenuePercentage,
 			distributableIncome,
 			earnedGrossReceipts,
 			totalExpenses,
-			grossReceipts
+			currentGrossReceipts
 		);
+		totalExpenses = 0;
 
 		currentPeriodStartTime = block.timestamp;
 	}
