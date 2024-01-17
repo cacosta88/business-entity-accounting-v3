@@ -699,6 +699,11 @@ const Home: NextPage = () => {
     }
   }, [AccountingPeriodClosedEvents]);
 
+  const { writeAsync: withdrawDistribution } = useScaffoldContractWrite({
+    contractName: "YourContract",
+    functionName: "withdraw",
+  });
+
   return (
     <>
       <MetaHeader />
@@ -1995,7 +2000,14 @@ const Home: NextPage = () => {
             )}
 
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <p>Placeholder Text 2</p>
+              <button
+                onClick={() => {
+                  withdrawDistribution();
+                }}
+                className="btn btn-primary"
+              >
+                Withdraw Distribution
+              </button>
             </div>
           </div>
           <br />

@@ -911,4 +911,13 @@ contract YourContract {
 	}
 
 
+	function getPendingWithdrawals(address _address)
+		external
+		view
+		returns (uint256)
+	{
+		return pendingWithdrawals[_address];
+	}
+
+
 }
