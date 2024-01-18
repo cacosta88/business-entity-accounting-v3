@@ -657,14 +657,10 @@ const Home: NextPage = () => {
     }
   }, [currentPeriod]);
 
-  //create function to write to voteForClosePeriodProposal, does not take any input
-
   const { writeAsync: voteForClosePeriodProposal } = useScaffoldContractWrite({
     contractName: "YourContract",
     functionName: "voteForClosePeriodProposal",
   });
-
-  //get history for AccountingPeriodClosed
 
   const { data: AccountingPeriodClosedEvents } = useScaffoldEventHistory({
     contractName: "YourContract",
@@ -703,6 +699,21 @@ const Home: NextPage = () => {
     contractName: "YourContract",
     functionName: "withdraw",
   });
+
+  const { data: pendingWithdrawals } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "getPendingWithdrawals",
+    args: [address],
+  });
+
+  const [pendingWithdrawalsArray, setPendingWithdrawalsArray] = useState<number>(0);
+
+  useEffect(() => {
+    if (pendingWithdrawals) {
+      const parsedWithdrawals = Number(pendingWithdrawals) / 1e18;
+      setPendingWithdrawalsArray(parsedWithdrawals);
+    }
+  }, [pendingWithdrawals]);
 
   return (
     <>
@@ -2006,7 +2017,8 @@ const Home: NextPage = () => {
                 }}
                 className="btn btn-primary"
               >
-                Withdraw Distribution
+                Withdraw Distribution <br />
+                Available Amount: {pendingWithdrawalsArray}
               </button>
             </div>
           </div>
