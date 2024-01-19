@@ -2027,10 +2027,10 @@ const Home: NextPage = () => {
 
           <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <p>Placeholder Text 3</p>
+              <p></p>
             </div>
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <p>Placeholder Text 4</p>
+              <p></p>
             </div>
           </div>
         </div>

@@ -400,7 +400,7 @@ contract YourContract {
 			(bool success, ) = payable(expenseProposal.recipient).call{
 				value: expenseProposal.amount
 			}("");
-			require(success, "TransferFailed");
+			if (!success) revert TransferFailed();
 			earmarkedFunds -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Settled;
 			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status, expenseProposal.period, currentPeriod);
@@ -593,12 +593,12 @@ contract YourContract {
 
 	function withdraw() public onlyOwners {
 		uint256 amount = pendingWithdrawals[msg.sender];
-		require(amount > 0, "No funds to withdraw");
+		if (amount == 0) revert OwnerNotFound();
 
 		pendingWithdrawals[msg.sender] = 0;
 
 		(bool success, ) = msg.sender.call{value: amount}("");
-		require(success, "Transfer failed");
+		if (!success) revert TransferFailed();
 	}
 
 	function setEstimatedEarnedRevenue(
