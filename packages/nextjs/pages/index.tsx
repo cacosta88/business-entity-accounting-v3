@@ -764,7 +764,7 @@ const Home: NextPage = () => {
             </div>
             <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
               <button onClick={openModal} className="btn btn-primary">
-                Open Capital Management
+                Add Equity Owner
               </button>
               {isModalOpen && (
                 <div

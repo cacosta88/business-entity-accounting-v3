@@ -234,6 +234,7 @@ contract YourContract {
 		uint256 _proposedCapital,
 		bool _isIncrease
 	) external onlyOwners {
+		if (owners[_proposedAddress].isAdded == true) revert ProposalAlreadyExists();
 		capitalAdjustmentProposalCounter++;
 		CapitalAdjustmentProposal storage proposal = capitalAdjustmentProposals[
 			capitalAdjustmentProposalCounter
@@ -248,20 +249,21 @@ contract YourContract {
 		] = true;
 		proposal.isIncrease = _isIncrease;
 
+		if (owners[_proposedAddress].isAdded == false) {
+    owners[_proposedAddress] = Owner(
+        0,
+        _proposedCapital,
+        true,
+        false,
+        ownerAddresses.length
+    );
+    ownerAddresses.push(_proposedAddress);
+}
+
 		if (calculateOwnershipPercentage(owners[msg.sender].capital) > 50) {
 			owners[proposal.proposedAddress].canDeposit = true;
 			delete capitalAdjustmentProposals[capitalAdjustmentProposalCounter];
-		}
 
-		if (owners[_proposedAddress].isAdded == false) {
-			owners[_proposedAddress] = Owner(
-				0,
-				_proposedCapital,
-				true,
-				false,
-				ownerAddresses.length
-			);
-			ownerAddresses.push(_proposedAddress);
 		} else {
 			owners[_proposedAddress].canDeposit = true;
 		}
