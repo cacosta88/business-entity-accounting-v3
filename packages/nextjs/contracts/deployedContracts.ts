@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+      address: "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
       abi: [
         {
           inputs: [
@@ -753,6 +753,29 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "currentBatchCapitalIncreaseProposal",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "totalVotes",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "approved",
+              type: "bool",
+            },
+            {
+              internalType: "uint256",
+              name: "deadline",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "currentPeriod",
           outputs: [
             {
@@ -791,6 +814,13 @@ const deployedContracts = {
             },
           ],
           name: "depositCapital",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "depositForBatchCapitalIncrease",
           outputs: [],
           stateMutability: "payable",
           type: "function",
@@ -938,6 +968,13 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "finalizeBatchCapitalIncrease",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -1338,6 +1375,19 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "isBatchCapitalIncreaseActive",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "isClosePeriodProposalActive",
           outputs: [
             {
@@ -1463,6 +1513,29 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [
+            {
+              internalType: "address[]",
+              name: "_ownerAddresses",
+              type: "address[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "_increases",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256",
+              name: "_duration",
+              type: "uint256",
+            },
+          ],
+          name: "proposeBatchCapitalIncrease",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "proposeCloseAccountingPeriod",
           outputs: [],
@@ -1524,6 +1597,13 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "voteForBatchCapitalIncrease",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
