@@ -791,7 +791,9 @@ const Home: NextPage = () => {
               <button onClick={openModal} className="btn btn-primary">
                 Add Equity Owner
               </button>
-              <button className="btn btn-primary mt-4">Increase Equity</button>
+              <button className="btn btn-primary mt-4" onClick={openIncreaseEquityModal}>
+                Increase Equity
+              </button>
               {isModalOpen && (
                 <div
                   style={{
@@ -1298,6 +1300,35 @@ const Home: NextPage = () => {
                         </table>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+              {isIncreaseEquityModalOpen && (
+                <div
+                  style={{
+                    position: "fixed",
+                    top: "10%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 2040,
+                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    padding: "20px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <div
+                    ref={invoiceModalRef}
+                    style={{
+                      backgroundColor: "white",
+                      padding: "20px",
+                      borderRadius: "10px",
+                      color: "black",
+                      backgroundImage: "url(background1.png)",
+                    }}
+                  >
+                    <button onClick={closeIncreaseEquityModal} className="btn btn-sm btn-circle absolute right-2 top-2">
+                      ✕
+                    </button>
                   </div>
                 </div>
               )}
