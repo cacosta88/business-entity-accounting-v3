@@ -304,8 +304,6 @@ const Home: NextPage = () => {
     };
   }, [isInvoiceModalOpen, handleInvoiceModalClickOutside]);
 
-  //create the modal mechanism for increase equity in the same manner a the others
-
   const [isIncreaseEquityModalOpen, setIsIncreaseEquityModalOpen] = useState(false);
   const increaseEquityModalRef = useRef<HTMLDivElement>(null);
 
