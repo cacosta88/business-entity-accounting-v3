@@ -304,6 +304,33 @@ const Home: NextPage = () => {
     };
   }, [isInvoiceModalOpen, handleInvoiceModalClickOutside]);
 
+  //create the modal mechanism for increase equity in the same manner a the others
+
+  const [isIncreaseEquityModalOpen, setIsIncreaseEquityModalOpen] = useState(false);
+  const increaseEquityModalRef = useRef<HTMLDivElement>(null);
+
+  //eslint-disable-next-line
+  const openIncreaseEquityModal = () => setIsIncreaseEquityModalOpen(true);
+
+  const closeIncreaseEquityModal = () => setIsIncreaseEquityModalOpen(false);
+
+  //eslint-disable-next-line
+  const handleIncreaseEquityModalClickOutside = (event: MouseEvent) => {
+    if (increaseEquityModalRef.current && !increaseEquityModalRef.current.contains(event.target as Node)) {
+      closeIncreaseEquityModal();
+    }
+  };
+
+  useEffect(() => {
+    if (isIncreaseEquityModalOpen) {
+      document.addEventListener("mousedown", handleIncreaseEquityModalClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleIncreaseEquityModalClickOutside);
+    };
+  }, [isIncreaseEquityModalOpen, handleIncreaseEquityModalClickOutside]);
+
   const [isPercentageModalOpen, setIsPercentageModalOpen] = useState(false);
   const percentageModalRef = useRef<HTMLDivElement>(null);
 
@@ -766,6 +793,7 @@ const Home: NextPage = () => {
               <button onClick={openModal} className="btn btn-primary">
                 Add Equity Owner
               </button>
+              <button className="btn btn-primary mt-4">Increase Equity</button>
               {isModalOpen && (
                 <div
                   style={{
