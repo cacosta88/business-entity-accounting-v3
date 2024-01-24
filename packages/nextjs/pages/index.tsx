@@ -1329,6 +1329,28 @@ const Home: NextPage = () => {
                     <button onClick={closeIncreaseEquityModal} className="btn btn-sm btn-circle absolute right-2 top-2">
                       ✕
                     </button>
+                    {[
+                      "Propose Equity Increase",
+                      "Vote on Equity Increase",
+                      "Deposit",
+                      "Execute Capital Increase",
+                      "Events",
+                    ].map((tabText, index) => (
+                      <a
+                        key={index}
+                        className={`tab tab-lg ${currentPage === index + 1 ? "tab-active" : ""}`}
+                        onClick={() => handleTabChange(index + 1)}
+                        style={{
+                          ...(currentPage === index + 1
+                            ? { ...selectedTabStyle, backgroundPosition: "center" }
+                            : { ...unselectedTabStyle, backgroundPosition: "center" }),
+                          backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
+                          filter: currentPage === index + 1 ? "brightness(100%)" : "none", // Adjust brightness for better readability
+                        }}
+                      >
+                        {tabText}
+                      </a>
+                    ))}
                   </div>
                 </div>
               )}
