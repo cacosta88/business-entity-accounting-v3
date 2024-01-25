@@ -369,7 +369,7 @@ const Home: NextPage = () => {
 
   const [isExpensesModalOpen, setIsExpensesModalOpen] = useState(false);
   const [expensesTab, setExpensesTab] = useState(1);
-  const expensesModalRef = useRef<HTMLDivElement>(null); // Ref for the expenses modal
+  const expensesModalRef = useRef<HTMLDivElement>(null);
 
   const openExpensesModal = () => {
     setIsExpensesModalOpen(true);
@@ -1351,6 +1351,62 @@ const Home: NextPage = () => {
                         {tabText}
                       </a>
                     ))}
+                    {currentPage === 1 && (
+                      <div style={activeTab === 1 ? activeTabContentStyle : tabContentStyle}>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                          <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Address
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Capital
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Ownership (%)
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Proposed Capital Increase
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {owners.addresses.map((address, index) => {
+                                const capital = owners.capitals[index] / 1e18;
+                                if (capital <= 0) return null; // Skip rows with capital <= 0
+                                return (
+                                  <tr key={index} className="hover:bg-gray-100">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                      {address}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                      {capital.toFixed(2)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                      {isNaN(parseFloat(owners.percentages[index])) ? 0 : owners.percentages[index]}%
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                        <button className="btn btn-primary">Propose Capital Increase</button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

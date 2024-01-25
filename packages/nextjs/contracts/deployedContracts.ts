@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -1523,11 +1523,6 @@ const deployedContracts = {
               internalType: "uint256[]",
               name: "_increases",
               type: "uint256[]",
-            },
-            {
-              internalType: "uint256",
-              name: "_duration",
-              type: "uint256",
             },
           ],
           name: "proposeBatchCapitalIncrease",
