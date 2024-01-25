@@ -157,6 +157,15 @@ const Home: NextPage = () => {
 
   const isOwner = owners.addresses.includes(address ?? "");
 
+  const [capitalAmounts, setCapitalAmounts] = useState<{ [key: string]: string }>({});
+  console.log("capitalAmounts", capitalAmounts);
+  const handleBatchCapitalAmountChange = (address: string, value: string) => {
+    setCapitalAmounts(prevState => ({
+      ...prevState,
+      [address]: value,
+    }));
+  };
+
   const { data: ownerDetails } = useScaffoldContractRead({
     contractName: "YourContract",
     functionName: "getOwnerDetails",
@@ -1386,7 +1395,6 @@ const Home: NextPage = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                               {owners.addresses.map((address, index) => {
                                 const capital = owners.capitals[index] / 1e18;
-                                if (capital <= 0) return null; // Skip rows with capital <= 0
                                 return (
                                   <tr key={index} className="hover:bg-gray-100">
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -1397,6 +1405,16 @@ const Home: NextPage = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                       {isNaN(parseFloat(owners.percentages[index])) ? 0 : owners.percentages[index]}%
+                                    </td>
+
+                                    <td>
+                                      <div>
+                                        <EtherInput
+                                          onChange={value => handleBatchCapitalAmountChange(address, value)}
+                                          value={capitalAmounts[address] || ""}
+                                          placeholder="Capital requirement"
+                                        />
+                                      </div>
                                     </td>
                                   </tr>
                                 );
