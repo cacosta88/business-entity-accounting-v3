@@ -996,5 +996,22 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		return pendingWithdrawals[_address];
 	}
 
+	//create function to get the content of currentBatchCapitalIncreaseProposal
+
+	function getBatchCapitalIncreaseProposal() external view returns (uint256[] memory, uint256[] memory, uint256, uint256, bool) {
+	uint256[] memory increases = new uint256[](ownerAddresses.length);
+	uint256[] memory deposits = new uint256[](ownerAddresses.length);
+
+	for (uint256 i = 0; i < ownerAddresses.length; i++) {
+		increases[i] = currentBatchCapitalIncreaseProposal.proposedIncreases[ownerAddresses[i]];
+		deposits[i] = currentBatchCapitalIncreaseProposal.hasDeposited[ownerAddresses[i]] ? 1 : 0;
+	}
+
+	return (increases, deposits, currentBatchCapitalIncreaseProposal.totalVotes, currentBatchCapitalIncreaseProposal.deadline, currentBatchCapitalIncreaseProposal.approved);
+
+
+
 
 }
+
+

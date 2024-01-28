@@ -1466,6 +1466,79 @@ const Home: NextPage = () => {
                         </button>
                       </div>
                     )}
+                    {currentPage === 2 && (
+                      <div style={activeTab === 2 ? activeTabContentStyle : tabContentStyle}>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                          <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Address
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Capital
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Ownership (%)
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Proposed Capital Increase
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {owners.addresses.map((address, index) => {
+                                const capital = owners.capitals[index] / 1e18;
+                                return (
+                                  <tr key={index} className="hover:bg-gray-100">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                      {address}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                      {capital.toFixed(2)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                      {isNaN(parseFloat(owners.percentages[index])) ? 0 : owners.percentages[index]}%
+                                    </td>
+
+                                    <td>
+                                      <div>
+                                        <EtherInput
+                                          onChange={value => handleBatchCapitalAmountChange(address, value)}
+                                          value={capitalAmounts[address] || ""}
+                                          placeholder="Capital requirement"
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            // Trigger contract write of the stored percentage
+                            proposeBatchCapitalIncrease();
+                          }}
+                        >
+                          Propose Capital Increase
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
