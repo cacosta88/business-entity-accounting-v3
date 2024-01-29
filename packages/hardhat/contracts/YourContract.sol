@@ -996,22 +996,32 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		return pendingWithdrawals[_address];
 	}
 
-	//create function to get the content of currentBatchCapitalIncreaseProposal
+function getBatchCapitalIncreaseProposal() external view returns (uint256[][] memory) {
+    uint256 ownerCount = ownerAddresses.length;
+    uint256[][] memory result = new uint256[][](3 + 2 * ownerCount); 
 
-	function getBatchCapitalIncreaseProposal() external view returns (uint256[] memory, uint256[] memory, uint256, uint256, bool) {
-	uint256[] memory increases = new uint256[](ownerAddresses.length);
-	uint256[] memory deposits = new uint256[](ownerAddresses.length);
+    for (uint256 i = 0; i < ownerCount; i++) {
+        result[i] = new uint256[](1);
+        result[i][0] = currentBatchCapitalIncreaseProposal.proposedIncreases[ownerAddresses[i]];
+    }
 
-	for (uint256 i = 0; i < ownerAddresses.length; i++) {
-		increases[i] = currentBatchCapitalIncreaseProposal.proposedIncreases[ownerAddresses[i]];
-		deposits[i] = currentBatchCapitalIncreaseProposal.hasDeposited[ownerAddresses[i]] ? 1 : 0;
-	}
-
-	return (increases, deposits, currentBatchCapitalIncreaseProposal.totalVotes, currentBatchCapitalIncreaseProposal.deadline, currentBatchCapitalIncreaseProposal.approved);
-
+    for (uint256 i = 0; i < ownerCount; i++) {
+        result[i + ownerCount] = new uint256[](1);
+        result[i + ownerCount][0] = currentBatchCapitalIncreaseProposal.hasDeposited[ownerAddresses[i]] ? 1 : 0;
+    }
 
 
+    result[2 * ownerCount] = new uint256[](1);
+    result[2 * ownerCount][0] = currentBatchCapitalIncreaseProposal.totalVotes;
 
+    result[2 * ownerCount + 1] = new uint256[](1);
+    result[2 * ownerCount + 1][0] = currentBatchCapitalIncreaseProposal.deadline;
+
+    result[2 * ownerCount + 2] = new uint256[](1);
+    result[2 * ownerCount + 2][0] = currentBatchCapitalIncreaseProposal.approved ? 1 : 0;
+
+    return result;
+}
 }
 
 
