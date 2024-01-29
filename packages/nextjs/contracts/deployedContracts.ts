@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     YourContract: {
-      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      address: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
       abi: [
         {
           inputs: [
@@ -68,6 +68,11 @@ const deployedContracts = {
         {
           inputs: [],
           name: "MismatchOwnersCapitalRequirements",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotAllOwnersDeposited",
           type: "error",
         },
         {
@@ -541,6 +546,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "allBatchDeposited",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "uint256",
@@ -749,29 +767,6 @@ const deployedContracts = {
           name: "createExpenseProposal",
           outputs: [],
           stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "currentBatchCapitalIncreaseProposal",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "totalVotes",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "approved",
-              type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "deadline",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
           type: "function",
         },
         {
@@ -1088,12 +1083,17 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "getBatchCapitalIncreaseProposal",
+          name: "getBatchCapitalIncreaseProposals",
           outputs: [
             {
-              internalType: "uint256[][]",
+              internalType: "address[]",
               name: "",
-              type: "uint256[][]",
+              type: "address[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
             },
           ],
           stateMutability: "view",
