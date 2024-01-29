@@ -336,6 +336,10 @@ contract YourContract {
     isBatchCapitalIncreaseActive = true;
 	uint256 _duration = 3600;
 
+	proposedBatchAddresses = new address[](_ownerAddresses.length);
+    proposedBatchIncreases = new uint256[](_increases.length);
+
+
     for (uint256 i = 0; i < _ownerAddresses.length; i++) {
         address owner = _ownerAddresses[i];
 		proposedBatchAddresses[i] = _ownerAddresses[i];

@@ -749,37 +749,13 @@ const Home: NextPage = () => {
     }
   }, [pendingWithdrawals]);
 
-  //create function call to contract to proposeBatchCapitalIncrease
-
   const { writeAsync: proposeBatchCapitalIncrease } = useScaffoldContractWrite({
     contractName: "YourContract",
     functionName: "proposeBatchCapitalIncrease",
     args: [
       Object.keys(capitalAmounts), // List of addresses
-      Object.entries(capitalAmounts).map(([key, value]) => {
-        console.log(`Processing ${key}: ${value}`);
-        let amount = value;
-
-        // Basic validation and type checking
-        if (typeof amount !== "string" && typeof amount !== "number") {
-          console.error(`Invalid type for amount. Key: ${key}, Value: ${amount}`);
-          amount = "0";
-        }
-
-        // Further validation for numeric values
-        if (isNaN(Number(amount)) || amount === null || amount === undefined || amount === "") {
-          console.error(`Invalid numeric value for amount. Key: ${key}, Value: ${amount}`);
-          amount = "0";
-        }
-
-        try {
-          return BigInt(amount);
-        } catch (error) {
-          console.error(`Error converting to BigInt. Key: ${key}, Value: ${amount}`, error);
-          return BigInt(0);
-        }
-      }), // List of amounts
-    ],
+      Object.values(capitalAmounts).map(amount => etherToWei(amount)),
+    ], // List of amounts
   });
 
   return (
