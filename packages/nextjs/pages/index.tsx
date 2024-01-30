@@ -771,7 +771,7 @@ const Home: NextPage = () => {
 
       setArrayOfBatchCapitalIncreaseProposalArray(arrayOfBatchCapitalIncreaseProposal_);
     }
-  });
+  }, [arrayOfBatchCapitalIncreaseProposal]);
 
   const { writeAsync: voteForBatchCapitalIncrease } = useScaffoldContractWrite({
     contractName: "YourContract",
