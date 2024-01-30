@@ -437,6 +437,7 @@ contract YourContract {
 			address owner = ownerAddresses[i];
 
 			owners[owner].capital += proposedBatchIncrease[owner];
+			totalCapital += proposedBatchIncrease[owner];
 
 			hasBatchDeposited[owner] = false;
 			proposedBatchIncrease[owner] = 0;
