@@ -22,11 +22,11 @@ contract YourContract {
 	}
 
 	enum ExpenseStatus {
-        Proposed,
-        Approved,
-        Settled,
-        Cancelled
-    }
+		Proposed,
+		Approved,
+		Settled,
+		Cancelled
+	}
 
 	struct ExpenseProposal {
 		string description;
@@ -34,9 +34,8 @@ contract YourContract {
 		uint256 amount;
 		uint256 votes;
 		ExpenseStatus status;
-		uint256 period; 
+		uint256 period;
 	}
-
 
 	struct Invoice {
 		address payable payor;
@@ -136,7 +135,7 @@ contract YourContract {
 	mapping(address => Owner) public owners;
 	address[] public ownerAddresses;
 	mapping(uint256 => CapitalAdjustmentProposal)
-	public capitalAdjustmentProposals;
+		public capitalAdjustmentProposals;
 	mapping(uint256 => ExpenseProposal) public expenseProposals;
 	uint256[] public expenseProposalIDs;
 	mapping(uint256 => uint256) public expenseProposalIndex;
@@ -159,13 +158,12 @@ contract YourContract {
 
 	uint256 public invoiceCounter = 0;
 	uint256 public expenseProposalCounter = 0;
-	
 
 	mapping(uint256 => mapping(address => bool))
-	public capitalAdjustmentProposalVoters;
+		public capitalAdjustmentProposalVoters;
 	mapping(uint256 => mapping(address => bool)) public expenseProposalVoters;
 	mapping(uint256 => mapping(address => bool))
-	public closePeriodProposalVoters;
+		public closePeriodProposalVoters;
 
 	uint256 public currentPeriodStartTime;
 	uint256 public currentPeriod = 1;
@@ -177,14 +175,13 @@ contract YourContract {
 	bool public isBatchCapitalIncreaseActive;
 	uint256[] proposedBatchIncreases;
 	address[] proposedBatchAddresses;
-	mapping (address => uint256) proposedBatchIncrease;
-	mapping (address => bool) hasBatchDeposited;
-	mapping (address => bool) hasBatchVoted;
+	mapping(address => uint256) proposedBatchIncrease;
+	mapping(address => bool) hasBatchDeposited;
+	mapping(address => bool) hasBatchVoted;
 	bool public allBatchDeposited;
 	uint256 totalBatchVotes;
 	uint256 batchDeadline;
 	bool batchApproved;
-
 
 	constructor(
 		address[] memory initialOwners,
@@ -245,7 +242,8 @@ contract YourContract {
 		uint256 _proposedCapital,
 		bool _isIncrease
 	) external onlyOwners {
-		if (owners[_proposedAddress].isAdded == true) revert ProposalAlreadyExists();
+		if (owners[_proposedAddress].isAdded == true)
+			revert ProposalAlreadyExists();
 		capitalAdjustmentProposalCounter++;
 		CapitalAdjustmentProposal storage proposal = capitalAdjustmentProposals[
 			capitalAdjustmentProposalCounter
@@ -261,20 +259,19 @@ contract YourContract {
 		proposal.isIncrease = _isIncrease;
 
 		if (owners[_proposedAddress].isAdded == false) {
-    owners[_proposedAddress] = Owner(
-        0,
-        _proposedCapital,
-        true,
-        false,
-        ownerAddresses.length
-    );
-    ownerAddresses.push(_proposedAddress);
-}
+			owners[_proposedAddress] = Owner(
+				0,
+				_proposedCapital,
+				true,
+				false,
+				ownerAddresses.length
+			);
+			ownerAddresses.push(_proposedAddress);
+		}
 
 		if (calculateOwnershipPercentage(owners[msg.sender].capital) > 50) {
 			owners[proposal.proposedAddress].canDeposit = true;
 			delete capitalAdjustmentProposals[capitalAdjustmentProposalCounter];
-
 		} else {
 			owners[_proposedAddress].canDeposit = true;
 		}
@@ -327,118 +324,125 @@ contract YourContract {
 	}
 
 	function proposeBatchCapitalIncrease(
-    address[] memory _ownerAddresses,
-    uint256[] memory _increases
-) external onlyOwners {
-    require(!isBatchCapitalIncreaseActive, "Another batch increase is active");
-    require(_ownerAddresses.length == _increases.length, "Array length mismatch");
+		address[] memory _ownerAddresses,
+		uint256[] memory _increases
+	) external onlyOwners {
+		require(
+			!isBatchCapitalIncreaseActive,
+			"Another batch increase is active"
+		);
+		require(
+			_ownerAddresses.length == _increases.length,
+			"Array length mismatch"
+		);
 
-    isBatchCapitalIncreaseActive = true;
-	uint256 _duration = 3600;
+		isBatchCapitalIncreaseActive = true;
+		uint256 _duration = 300;
 
-	proposedBatchAddresses = new address[](_ownerAddresses.length);
-    proposedBatchIncreases = new uint256[](_increases.length);
+		proposedBatchAddresses = new address[](_ownerAddresses.length);
+		proposedBatchIncreases = new uint256[](_increases.length);
 
+		for (uint256 i = 0; i < _ownerAddresses.length; i++) {
+			address owner = _ownerAddresses[i];
+			proposedBatchAddresses[i] = _ownerAddresses[i];
+			require(owners[owner].isAdded, "Owner not found");
+			require(owners[owner].capital > 0, "Owner has no capital");
+			require(_increases[i] > 0, "Increase must be greater than 0");
+			require(!hasBatchVoted[owner], "Owner already voted");
+			require(!hasBatchDeposited[owner], "Owner already deposited");
 
-    for (uint256 i = 0; i < _ownerAddresses.length; i++) {
-        address owner = _ownerAddresses[i];
-		proposedBatchAddresses[i] = _ownerAddresses[i];
-		require(owners[owner].isAdded, "Owner not found");
-		require(owners[owner].capital > 0, "Owner has no capital");
-		require(_increases[i] > 0, "Increase must be greater than 0");
-		require(!hasBatchVoted[owner], "Owner already voted");
-		require(!hasBatchDeposited[owner], "Owner already deposited");
+			proposedBatchIncreases[i] = _increases[i];
+			proposedBatchAddresses[i] = owner;
+			totalBatchVotes += calculateOwnershipPercentage(
+				owners[owner].capital
+			);
 
-		proposedBatchIncreases[i] = _increases[i];
-		proposedBatchAddresses[i] = owner;
-		totalBatchVotes += calculateOwnershipPercentage(owners[owner].capital);
-		hasBatchDeposited[owner] = true;
-		proposedBatchIncrease[owner] = _increases[i];
-		
+			proposedBatchIncrease[owner] = _increases[i];
+		}
+		batchDeadline = block.timestamp + _duration;
+		uint256 voteWeight = calculateOwnershipPercentage(
+			owners[msg.sender].capital
+		);
+		totalBatchVotes += voteWeight;
+		hasBatchVoted[msg.sender] = true;
 
-		
+		if (totalBatchVotes > 50) {
+			batchApproved = true;
+		}
+	}
 
+	function voteForBatchCapitalIncrease() external onlyOwners {
+		require(
+			isBatchCapitalIncreaseActive,
+			"No active batch increase proposal"
+		);
+		require(!hasBatchVoted[msg.sender], "Already voted");
 
-    }
-	batchDeadline = block.timestamp + _duration;
+		uint256 voteWeight = calculateOwnershipPercentage(
+			owners[msg.sender].capital
+		);
+		totalBatchVotes += voteWeight;
+		hasBatchVoted[msg.sender] = true;
 
-}
+		if (totalBatchVotes > 50) {
+			batchApproved = true;
+		}
+	}
 
+	function depositForBatchCapitalIncrease() external payable onlyOwners {
+		require(batchApproved, "Proposal not approved");
+		require(block.timestamp <= batchDeadline, "Deadline has passed");
+		require(
+			msg.value == proposedBatchIncrease[msg.sender],
+			"Incorrect deposit amount"
+		);
+		require(!hasBatchDeposited[msg.sender], "Already deposited");
 
-function voteForBatchCapitalIncrease() external onlyOwners {
-    require(isBatchCapitalIncreaseActive, "No active batch increase proposal");
-    require(!hasBatchVoted[msg.sender], "Already voted");
+		hasBatchVoted[msg.sender] = true;
+	}
 
-    uint256 voteWeight = calculateOwnershipPercentage(owners[msg.sender].capital);
-    totalBatchVotes += voteWeight;
-    hasBatchVoted[msg.sender] = true;
+	function finalizeBatchCapitalIncrease() external onlyOwners {
+		require(
+			isBatchCapitalIncreaseActive,
+			"No active batch increase proposal"
+		);
+		require(batchApproved, "Batch not approved");
+		require(block.timestamp > batchDeadline, "Deadline not yet passed");
 
-    if (totalBatchVotes > 50) {
-        batchApproved = true;
-    }
-}
+		for (uint256 i = 0; i < ownerAddresses.length; i++) {
+			address owner = ownerAddresses[i];
+			if (!hasBatchDeposited[owner]) {
+				for (uint256 j = 0; j < ownerAddresses.length; j++) {
+					address depositor = ownerAddresses[j];
+					if (hasBatchDeposited[depositor]) {
+						uint256 refundAmount = proposedBatchIncrease[depositor];
+						pendingWithdrawals[depositor] += refundAmount;
 
+						hasBatchDeposited[depositor] = false;
+						proposedBatchIncrease[depositor] = 0;
+					}
+				}
 
-function depositForBatchCapitalIncrease() external payable onlyOwners {
-    require(batchApproved, "Proposal not approved");
-	require(block.timestamp <= batchDeadline, "Deadline has passed");
-    require(msg.value == proposedBatchIncrease[msg.sender], "Incorrect deposit amount");
-    require(!hasBatchDeposited[msg.sender], "Already deposited");
+				isBatchCapitalIncreaseActive = false;
+				batchApproved = false;
+				totalBatchVotes = 0;
+				return;
+			}
+		}
 
-    hasBatchVoted[msg.sender] = true;
+		for (uint256 i = 0; i < ownerAddresses.length; i++) {
+			address owner = ownerAddresses[i];
 
-}
+			owners[owner].capital += proposedBatchIncrease[owner];
 
-function finalizeBatchCapitalIncrease() external onlyOwners {
-    require(isBatchCapitalIncreaseActive, "No active batch increase proposal");
-    require(batchApproved, "Batch not approved");
-    require(block.timestamp > batchDeadline, "Deadline not yet passed");
+			hasBatchDeposited[owner] = false;
+			proposedBatchIncrease[owner] = 0;
+		}
 
-
-    for (uint256 i = 0; i < ownerAddresses.length; i++) {
-        address owner = ownerAddresses[i];
-        if (!hasBatchDeposited[owner]) {
-       
-            for (uint256 j = 0; j < ownerAddresses.length; j++) {
-                address depositor = ownerAddresses[j];
-                if (hasBatchDeposited[depositor]) {
-                    uint256 refundAmount = proposedBatchIncrease[depositor];
-                    pendingWithdrawals[depositor] += refundAmount;
-
-                  
-                    hasBatchDeposited[depositor] = false;
-                    proposedBatchIncrease[depositor] = 0;
-                }
-            }
-
-       
-            isBatchCapitalIncreaseActive = false;
-            batchApproved = false;
-            totalBatchVotes = 0;
-            return;
-        }
-    }
-
-
-    for (uint256 i = 0; i < ownerAddresses.length; i++) {
-        address owner = ownerAddresses[i];
-        
-		owners[owner].capital += proposedBatchIncrease[owner];
-
-
-        hasBatchDeposited[owner] = false;
-        proposedBatchIncrease[owner] = 0;
-    }
-
-
-    isBatchCapitalIncreaseActive = false;
-    batchApproved = false;
-    totalBatchVotes = 0;
-
-
-}
-
-
+		isBatchCapitalIncreaseActive = false;
+		batchApproved = false;
+		totalBatchVotes = 0;
+	}
 
 	function createExpenseProposal(
 		string memory description,
@@ -454,7 +458,7 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		expenseProposal.amount = amount;
 		expenseProposal.status = ExpenseStatus.Proposed;
 		expenseProposal.period = currentPeriod;
-	
+
 		uint256 initialExpenseProposalVotes = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
@@ -500,12 +504,12 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 			earmarkedFunds += expenseProposal.amount;
 			emit ExpenseApproved(expenseProposalCounter);
 
-
-		emit ExpenseProposed(
-			expenseProposalCounter,
-			expenseProposal.description,
-			expenseProposal.recipient,
-			expenseProposal.amount);
+			emit ExpenseProposed(
+				expenseProposalCounter,
+				expenseProposal.description,
+				expenseProposal.recipient,
+				expenseProposal.amount
+			);
 		}
 
 		emit ExpenseVoted(msg.sender, expenseID, votescast);
@@ -518,10 +522,9 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		ExpenseProposal storage expenseProposal = expenseProposals[expenseID];
 		if (expenseProposal.recipient == address(0))
 			revert ExpenseProposalNotFound();
-		 if (expenseProposal.status != ExpenseStatus.Approved) {
-        revert ExpenseNotApproved();
-    }
-
+		if (expenseProposal.status != ExpenseStatus.Approved) {
+			revert ExpenseNotApproved();
+		}
 
 		if (toSettle) {
 			(bool success, ) = payable(expenseProposal.recipient).call{
@@ -530,9 +533,17 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 			if (!success) revert TransferFailed();
 			earmarkedFunds -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Settled;
-			emit ExpenseSettled(expenseID, expenseProposal.description, expenseProposal.recipient,expenseProposal.amount, expenseProposal.votes, expenseProposal.status, expenseProposal.period, currentPeriod);
+			emit ExpenseSettled(
+				expenseID,
+				expenseProposal.description,
+				expenseProposal.recipient,
+				expenseProposal.amount,
+				expenseProposal.votes,
+				expenseProposal.status,
+				expenseProposal.period,
+				currentPeriod
+			);
 		} else {
-			
 			earmarkedFunds -= expenseProposal.amount;
 			totalExpenses -= expenseProposal.amount;
 			expenseProposal.status = ExpenseStatus.Cancelled;
@@ -547,10 +558,7 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		expenseProposalIDs.pop();
 
 		delete expenseProposals[expenseID];
-		
 	}
-
-
 
 	function issueInvoice(
 		address payable _payor,
@@ -590,7 +598,6 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 
 		grossReceipts += msg.value;
 
-
 		uint256 indexToRemove = invoiceIndex[invoiceID];
 		uint256 lastInvoiceID = invoiceIDs[invoiceIDs.length - 1];
 
@@ -608,13 +615,10 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		);
 	}
 
-	function proposeCloseAccountingPeriod(
-	) external onlyOwners {
+	function proposeCloseAccountingPeriod() external onlyOwners {
 		if (isClosePeriodProposalActive) revert ProposalAlreadyExists();
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 
-	
-		
 		uint256 initialOwnershipPercentage = calculateOwnershipPercentage(
 			owners[msg.sender].capital
 		);
@@ -623,17 +627,13 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		closePeriodProposalVoters[currentPeriod][msg.sender] = true;
 
 		if (initialOwnershipPercentage > 50) {
-
 			executeCloseAccountingPeriod();
 		} else {
-
-		isClosePeriodProposalActive = true;
+			isClosePeriodProposalActive = true;
 		}
-
 	}
 
-	function voteForClosePeriodProposal(
-	) external onlyOwners {
+	function voteForClosePeriodProposal() external onlyOwners {
 		if (owners[msg.sender].capital == 0) revert OwnerNotFound();
 		if (closePeriodProposalVoters[currentPeriod][msg.sender])
 			revert CanOnlyVoteOnce();
@@ -646,19 +646,14 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		closePeriodVotes += voteCast;
 		closePeriodProposalVoters[currentPeriod][msg.sender] = true;
 
-
-
 		if (closePeriodVotes > 50) {
-
 			executeCloseAccountingPeriod();
 		}
 
 		emit ClosePeriodVoted(msg.sender, currentPeriod);
 	}
 
-	function executeCloseAccountingPeriod(
-	) internal onlyOwners {
-
+	function executeCloseAccountingPeriod() internal onlyOwners {
 		uint256 earnedGrossReceipts = (grossReceipts *
 			estimatedEarnedRevenuePercentage) / 100;
 		uint256 distributableIncome = 0;
@@ -668,7 +663,6 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 
 		uint256 currentGrossReceipts = grossReceipts;
 		grossReceipts -= earnedGrossReceipts;
-		
 
 		if (distributableIncome > 0) {
 			for (uint i = 0; i < ownerAddresses.length; i++) {
@@ -676,22 +670,20 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 				uint256 ownershipPercentage = calculateOwnershipPercentage(
 					owners[currentOwnerAddress].capital
 				);
-				uint256 ownerShare = (distributableIncome * ownershipPercentage) / 100;
+				uint256 ownerShare = (distributableIncome *
+					ownershipPercentage) / 100;
 				if (ownerShare > 0) {
 					pendingWithdrawals[currentOwnerAddress] += ownerShare;
 				}
 			}
 		}
 
-
-
 		uint256 endTime = block.timestamp;
 
 		currentPeriod++;
 
-
 		uint256 earnedRevenuePercentage = estimatedEarnedRevenuePercentage;
-	
+
 		estimatedEarnedRevenuePercentage = 0;
 		isClosePeriodProposalActive = false;
 		closePeriodVotes = 0;
@@ -704,7 +696,7 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		}
 
 		emit AccountingPeriodClosed(
-			currentPeriod-1,
+			currentPeriod - 1,
 			currentPeriodStartTime,
 			endTime,
 			earnedRevenuePercentage,
@@ -724,7 +716,7 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 
 		pendingWithdrawals[msg.sender] = 0;
 
-		(bool success, ) = msg.sender.call{value: amount}("");
+		(bool success, ) = msg.sender.call{ value: amount }("");
 		if (!success) revert TransferFailed();
 	}
 
@@ -871,7 +863,6 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		);
 	}
 
-
 	function getActiveCapitalAdjustmentProposals()
 		external
 		view
@@ -924,8 +915,6 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 
 			expenseProposalsArray[i] = new uint256[](6);
 			expenseProposalsArray[i][0] = expenseProposalIDs[i];
-		
-		
 
 			expenseProposalsArray[i][1] = uint256(
 				uint160(expproposal.recipient)
@@ -939,36 +928,40 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		return expenseProposalsArray;
 	}
 
-
-    function getActiveExpenseProposalDescriptions()
-        external
-        view
-        returns (string[] memory)
-    {
- 
-        uint256 unapprovedCount = 0;
-        for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
-            if (expenseProposals[expenseProposalIDs[i]].status == ExpenseStatus.Proposed) {
+	function getActiveExpenseProposalDescriptions()
+		external
+		view
+		returns (string[] memory)
+	{
+		uint256 unapprovedCount = 0;
+		for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
+			if (
+				expenseProposals[expenseProposalIDs[i]].status ==
+				ExpenseStatus.Proposed
+			) {
 				unapprovedCount++;
-            }
-        }
+			}
+		}
 
-    
-        string[] memory expenseProposalDescriptions = new string[](
-            unapprovedCount
-        );
+		string[] memory expenseProposalDescriptions = new string[](
+			unapprovedCount
+		);
 
-        uint256 currentIndex = 0;
-        for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
-            if (expenseProposals[expenseProposalIDs[i]].status == ExpenseStatus.Proposed) {
-                expenseProposalDescriptions[currentIndex] =
-                    expenseProposals[expenseProposalIDs[i]].description;
-                currentIndex++;
-            }
-        }
+		uint256 currentIndex = 0;
+		for (uint256 i = 0; i < expenseProposalIDs.length; i++) {
+			if (
+				expenseProposals[expenseProposalIDs[i]].status ==
+				ExpenseStatus.Proposed
+			) {
+				expenseProposalDescriptions[currentIndex] = expenseProposals[
+					expenseProposalIDs[i]
+				].description;
+				currentIndex++;
+			}
+		}
 
-        return expenseProposalDescriptions;
-    }
+		return expenseProposalDescriptions;
+	}
 
 	function getApprovedExpenseProposals()
 		external
@@ -1000,7 +993,6 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		return approvedExpenseProposals;
 	}
 
-
 	function getApprovedExpenseProposalDescriptions()
 		external
 		view
@@ -1026,10 +1018,9 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 				expenseProposals[expenseProposalIDs[i]].status ==
 				ExpenseStatus.Approved
 			) {
-				approvedExpenseProposalDescriptions[currentIndex] = expenseProposals[
-					expenseProposalIDs[i]
-				]
-					.description;
+				approvedExpenseProposalDescriptions[
+					currentIndex
+				] = expenseProposals[expenseProposalIDs[i]].description;
 				currentIndex++;
 			}
 		}
@@ -1037,42 +1028,29 @@ function finalizeBatchCapitalIncrease() external onlyOwners {
 		return approvedExpenseProposalDescriptions;
 	}
 
-
-	function getPendingWithdrawals(address _address)
-		external
-		view
-		returns (uint256)
-	{
+	function getPendingWithdrawals(
+		address _address
+	) external view returns (uint256) {
 		return pendingWithdrawals[_address];
 	}
 
-	function getBatchCapitalIncreaseProposals() 
-    external 
-    view 
-    returns (address[] memory, uint256[] memory) 
-{
-    require(isBatchCapitalIncreaseActive, "No active batch capital increase proposal");
+	function getBatchCapitalIncreaseProposals()
+		external
+		view
+		returns (uint256[] memory)
+	{
+		require(
+			isBatchCapitalIncreaseActive,
+			"No active batch capital increase proposal"
+		);
 
-    uint256 length = proposedBatchAddresses.length;
-    address[] memory addresses = new address[](length);
-    uint256[] memory increases = new uint256[](length);
+		uint256 length = proposedBatchAddresses.length;
+		uint256[] memory increases = new uint256[](length);
 
-    for (uint256 i = 0; i < length; i++) {
-        addresses[i] = proposedBatchAddresses[i];
-        increases[i] = proposedBatchIncreases[i];
-    }
+		for (uint256 i = 0; i < length; i++) {
+			increases[i] = proposedBatchIncreases[i];
+		}
 
-    return (addresses, increases);
+		return increases;
+	}
 }
-
-
-	
-
-
-
-
-
-
-}
-
-

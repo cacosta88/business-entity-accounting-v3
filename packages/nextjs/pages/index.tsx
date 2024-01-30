@@ -752,10 +752,30 @@ const Home: NextPage = () => {
   const { writeAsync: proposeBatchCapitalIncrease } = useScaffoldContractWrite({
     contractName: "YourContract",
     functionName: "proposeBatchCapitalIncrease",
-    args: [
-      Object.keys(capitalAmounts), // List of addresses
-      Object.values(capitalAmounts).map(amount => etherToWei(amount)),
-    ], // List of amounts
+    args: [Object.keys(capitalAmounts), Object.values(capitalAmounts).map(amount => etherToWei(amount))],
+  });
+
+  const { data: arrayOfBatchCapitalIncreaseProposal } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "getBatchCapitalIncreaseProposals",
+  });
+
+  const [arrayOfBatchCapitalIncreaseProposalArray, setArrayOfBatchCapitalIncreaseProposalArray] = useState<any>([]);
+
+  useEffect(() => {
+    if (arrayOfBatchCapitalIncreaseProposal) {
+      //for each item in the array convert from wei to eth, its one array that only has amount and nothing else
+      const arrayOfBatchCapitalIncreaseProposal_ = arrayOfBatchCapitalIncreaseProposal.map((item: any) => {
+        return Number(item) / 1e18;
+      });
+
+      setArrayOfBatchCapitalIncreaseProposalArray(arrayOfBatchCapitalIncreaseProposal_);
+    }
+  });
+
+  const { writeAsync: voteForBatchCapitalIncrease } = useScaffoldContractWrite({
+    contractName: "YourContract",
+    functionName: "voteForBatchCapitalIncrease",
   });
 
   return (
@@ -1489,15 +1509,7 @@ const Home: NextPage = () => {
                                       {isNaN(parseFloat(owners.percentages[index])) ? 0 : owners.percentages[index]}%
                                     </td>
 
-                                    <td>
-                                      <div>
-                                        <EtherInput
-                                          onChange={value => handleBatchCapitalAmountChange(address, value)}
-                                          value={capitalAmounts[address] || ""}
-                                          placeholder="Capital requirement"
-                                        />
-                                      </div>
-                                    </td>
+                                    <td>{arrayOfBatchCapitalIncreaseProposalArray[index] || "N/A"}</td>
                                   </tr>
                                 );
                               })}
@@ -1507,11 +1519,10 @@ const Home: NextPage = () => {
                         <button
                           className="btn btn-primary"
                           onClick={() => {
-                            // Trigger contract write of the stored percentage
-                            proposeBatchCapitalIncrease();
+                            voteForBatchCapitalIncrease();
                           }}
                         >
-                          Propose Capital Increase
+                          Vote on Capital Increase
                         </button>
                       </div>
                     )}
