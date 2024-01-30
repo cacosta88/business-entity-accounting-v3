@@ -179,9 +179,9 @@ contract YourContract {
 	mapping(address => bool) hasBatchDeposited;
 	mapping(address => bool) hasBatchVoted;
 	bool public allBatchDeposited;
-	uint256 totalBatchVotes;
-	uint256 batchDeadline;
-	bool batchApproved;
+	uint256 public totalBatchVotes;
+	uint256 public batchDeadline;
+	bool public batchApproved;
 
 	constructor(
 		address[] memory initialOwners,
@@ -337,7 +337,7 @@ contract YourContract {
 		);
 
 		isBatchCapitalIncreaseActive = true;
-		uint256 _duration = 300;
+		uint256 _duration = 5 minutes;
 
 		proposedBatchAddresses = new address[](_ownerAddresses.length);
 		proposedBatchIncreases = new uint256[](_increases.length);
@@ -358,6 +358,7 @@ contract YourContract {
 			);
 
 			proposedBatchIncrease[owner] = _increases[i];
+			hasBatchDeposited[owner] = false;
 		}
 		batchDeadline = block.timestamp + _duration;
 		uint256 voteWeight = calculateOwnershipPercentage(
@@ -376,6 +377,7 @@ contract YourContract {
 			isBatchCapitalIncreaseActive,
 			"No active batch increase proposal"
 		);
+		require(block.timestamp <= batchDeadline, "Voting period has ended");
 		require(!hasBatchVoted[msg.sender], "Already voted");
 
 		uint256 voteWeight = calculateOwnershipPercentage(
@@ -399,6 +401,7 @@ contract YourContract {
 		require(!hasBatchDeposited[msg.sender], "Already deposited");
 
 		hasBatchVoted[msg.sender] = true;
+		hasBatchDeposited[msg.sender] = true;
 	}
 
 	function finalizeBatchCapitalIncrease() external onlyOwners {
