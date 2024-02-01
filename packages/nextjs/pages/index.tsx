@@ -796,7 +796,6 @@ const Home: NextPage = () => {
 
   const isBatchDepositable = arrayOfOwnersForBatchDepositArray.includes(address ?? "");
 
-  //create read function for getBatchDepositAmount which takes the address of the current user and returns the amount that may be deposited
   const { data: batchDepositableAmount } = useScaffoldContractRead({
     contractName: "YourContract",
     functionName: "getBatchDepositAmount",
