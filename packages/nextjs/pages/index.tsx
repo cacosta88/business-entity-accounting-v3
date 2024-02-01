@@ -764,7 +764,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (arrayOfBatchCapitalIncreaseProposal) {
-      //for each item in the array convert from wei to eth, its one array that only has amount and nothing else
       const arrayOfBatchCapitalIncreaseProposal_ = arrayOfBatchCapitalIncreaseProposal.map((item: any) => {
         return Number(item) / 1e18;
       });
@@ -776,6 +775,47 @@ const Home: NextPage = () => {
   const { writeAsync: voteForBatchCapitalIncrease } = useScaffoldContractWrite({
     contractName: "YourContract",
     functionName: "voteForBatchCapitalIncrease",
+  });
+
+  const { data: arrayOfOwnersForBatchDeposit } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "getOwnersForBatchDeposit",
+  });
+
+  const [arrayOfOwnersForBatchDepositArray, setArrayOfOwnersForBatchDepositArray] = useState<any>([]);
+
+  useEffect(() => {
+    if (arrayOfOwnersForBatchDeposit) {
+      const arrayOfOwnersForBatchDeposit_ = arrayOfOwnersForBatchDeposit.map((item: any) => {
+        return item;
+      });
+
+      setArrayOfOwnersForBatchDepositArray(arrayOfOwnersForBatchDeposit_);
+    }
+  }, [arrayOfOwnersForBatchDeposit]);
+
+  const isBatchDepositable = arrayOfOwnersForBatchDepositArray.includes(address ?? "");
+
+  //create read function for getBatchDepositAmount which takes the address of the current user and returns the amount that may be deposited
+  const { data: batchDepositableAmount } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "getBatchDepositAmount",
+    args: [address],
+  });
+
+  const [batchDepositableAmountNumber, setBatchDepositableAmountNumber] = useState<number>(0);
+
+  useEffect(() => {
+    if (batchDepositableAmount) {
+      const batchDepositableAmountNumber = Number(batchDepositableAmount) / 1e18;
+      setBatchDepositableAmountNumber(batchDepositableAmountNumber);
+    }
+  }, [batchDepositableAmount]);
+
+  const { writeAsync: depositForBatchCapitalIncrease } = useScaffoldContractWrite({
+    contractName: "YourContract",
+    functionName: "depositForBatchCapitalIncrease",
+    value: etherToWei(batchDepositableAmountNumber.toString()),
   });
 
   return (
@@ -1524,6 +1564,26 @@ const Home: NextPage = () => {
                         >
                           Vote on Capital Increase
                         </button>
+                      </div>
+                    )}
+                    {currentPage === 3 && (
+                      <div style={activeTab === 3 ? activeTabContentStyle : tabContentStyle}>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}></div>
+                        {isBatchDepositable && (
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              depositForBatchCapitalIncrease();
+                            }}
+                          >
+                            Deposit {batchDepositableAmountNumber.toFixed(2)} eth
+                          </button>
+                        )}
+                        {!isBatchDepositable && (
+                          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                            You are not authorized to deposit
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

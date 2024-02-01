@@ -1057,4 +1057,39 @@ contract YourContract {
 
 		return increases;
 	}
+
+	//create getter function to get the list of owners that can batch deposit
+
+	function getOwnersForBatchDeposit()
+		external
+		view
+		returns (address[] memory)
+	{
+		require(
+			isBatchCapitalIncreaseActive,
+			"No active batch capital increase proposal"
+		);
+
+		uint256 length = proposedBatchAddresses.length;
+		address[] memory addresses = new address[](length);
+
+		for (uint256 i = 0; i < length; i++) {
+			addresses[i] = proposedBatchAddresses[i];
+		}
+
+		return addresses;
+	}
+
+	function getBatchDepositAmount(address _address)
+		external
+		view
+		returns (uint256)
+	{
+		require(
+			isBatchCapitalIncreaseActive,
+			"No active batch capital increase proposal"
+		);
+
+		return proposedBatchIncrease[_address];
+	}
 }
