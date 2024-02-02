@@ -1058,7 +1058,6 @@ contract YourContract {
 		return increases;
 	}
 
-	//create getter function to get the list of owners that can batch deposit
 
 	function getOwnersForBatchDeposit()
 		external

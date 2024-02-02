@@ -817,6 +817,11 @@ const Home: NextPage = () => {
     value: etherToWei(batchDepositableAmountNumber.toString()),
   });
 
+  const { writeAsync: finalizeBatchCapitalIncrease } = useScaffoldContractWrite({
+    contractName: "YourContract",
+    functionName: "finalizeBatchCapitalIncrease",
+  });
+
   return (
     <>
       <MetaHeader />
@@ -1576,6 +1581,26 @@ const Home: NextPage = () => {
                             }}
                           >
                             Deposit {batchDepositableAmountNumber.toFixed(2)} eth
+                          </button>
+                        )}
+                        {!isBatchDepositable && (
+                          <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                            You are not authorized to deposit
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {currentPage === 4 && (
+                      <div style={activeTab === 4 ? activeTabContentStyle : tabContentStyle}>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}></div>
+                        {isBatchDepositable && (
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              finalizeBatchCapitalIncrease();
+                            }}
+                          >
+                            Finalize Capital Increase
                           </button>
                         )}
                         {!isBatchDepositable && (
