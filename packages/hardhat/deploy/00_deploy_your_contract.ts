@@ -23,7 +23,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deploy } = hre.deployments;
 
   // Constructor arguments for the contract, update as needed.
-  const initialOwners = ["0xd7220Cc7fa906DcDAdFdAD3A07cA52E4d37b1af7"];
+  const initialOwners = ["0xD2a561BA9814416DA6b24034D5863CfF33Db55Ac"];
   const initialCapital = [ethers.utils.parseEther("0.1")];
 
   await deploy("YourContract", {
