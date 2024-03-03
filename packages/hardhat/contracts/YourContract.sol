@@ -1086,9 +1086,14 @@ contract YourContract {
 	{
 		require(
 			isBatchCapitalIncreaseActive,
-			"No active batch capital increase proposal"
+			"No active batch capital increase proposal"	//make getter function to check by the id if an invoice has been paid 
+
 		);
 
 		return proposedBatchIncrease[_address];
+	}
+
+	function getInvoicePaid(uint256 invoiceID) external view returns (bool) {
+		return invoices[invoiceID].isPaid;
 	}
 }
