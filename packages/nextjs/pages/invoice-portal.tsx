@@ -6,9 +6,10 @@ import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 //import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { Address } from "~~/components/scaffold-eth";
+import { InvoicePaidCheck } from "~~/components/scaffold-eth";
 //import { Capitaladjvote, ExpAdjVote, ExpCancel, ExpSettle } from "~~/components/scaffold-eth";
 //eslint-disable-next-line
-import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 
 const Invoice: NextPage = () => {
   const { address } = useAccount();
@@ -66,6 +67,7 @@ const Invoice: NextPage = () => {
                 <th>Description</th>
                 <th>Period</th>
                 <th>Timestamp</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -77,6 +79,9 @@ const Invoice: NextPage = () => {
                   <td>{event.description}</td>
                   <td>{event.period}</td>
                   <td>{new Date(event.timestamp).toLocaleString()}</td>
+                  <td>
+                    <InvoicePaidCheck proposalID={Number(event.invoiceID)} />
+                  </td>
                 </tr>
               ))}
             </tbody>

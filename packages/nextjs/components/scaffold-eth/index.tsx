@@ -10,3 +10,4 @@ export * from "./CapitalAdjVote";
 export * from "./ExpAdjVote";
 export * from "./ExpSettle";
 export * from "./ExpCancel";
+export * from "./InvoicePaidCheck";
