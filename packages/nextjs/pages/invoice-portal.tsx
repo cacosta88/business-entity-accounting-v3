@@ -7,6 +7,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 //import { AddressInput, EtherInput, InputBase } from "~~/components/scaffold-eth";
 import { Address } from "~~/components/scaffold-eth";
 import { InvoicePaidCheck } from "~~/components/scaffold-eth";
+import { PayInvoice } from "~~/components/scaffold-eth";
 //import { Capitaladjvote, ExpAdjVote, ExpCancel, ExpSettle } from "~~/components/scaffold-eth";
 //eslint-disable-next-line
 import { useScaffoldContractRead, useScaffoldContractWrite, useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
@@ -68,6 +69,7 @@ const Invoice: NextPage = () => {
                 <th>Period</th>
                 <th>Timestamp</th>
                 <th>Status</th>
+                <th>Pay</th>
               </tr>
             </thead>
             <tbody>
@@ -81,6 +83,9 @@ const Invoice: NextPage = () => {
                   <td>{new Date(event.timestamp).toLocaleString()}</td>
                   <td>
                     <InvoicePaidCheck proposalID={Number(event.invoiceID)} />
+                  </td>
+                  <td>
+                    <PayInvoice proposalID={Number(event.invoiceID)} amount={event.amount} />
                   </td>
                 </tr>
               ))}

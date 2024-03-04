@@ -11,3 +11,4 @@ export * from "./ExpAdjVote";
 export * from "./ExpSettle";
 export * from "./ExpCancel";
 export * from "./InvoicePaidCheck";
+export * from "./PayInvoice";
