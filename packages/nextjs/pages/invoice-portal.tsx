@@ -100,7 +100,7 @@ const Invoice: NextPage = () => {
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Paid?
+                  Paid
                 </th>
                 <th
                   scope="col"
@@ -125,11 +125,7 @@ const Invoice: NextPage = () => {
                     <InvoicePaidCheck proposalID={Number(event.invoiceID)} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {<InvoicePaidCheck proposalID={Number(event.invoiceID)} /> ? (
-                      <button disabled={true}>Paid</button>
-                    ) : (
-                      <PayInvoice proposalID={Number(event.invoiceID)} amount={event.amount} />
-                    )}
+                    <PayInvoice proposalID={Number(event.invoiceID)} amount={event.amount} />
                   </td>
                 </tr>
               ))}

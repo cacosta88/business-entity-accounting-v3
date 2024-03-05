@@ -1,4 +1,4 @@
-import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 type PayInvoiceProps = {
   proposalID: number;
@@ -6,6 +6,11 @@ type PayInvoiceProps = {
 };
 
 export const PayInvoice = ({ proposalID, amount }: PayInvoiceProps) => {
+  const { data: invoiceStatus } = useScaffoldContractRead({
+    contractName: "YourContract",
+    functionName: "getInvoicePaid",
+    args: [BigInt(proposalID)],
+  });
   const etherToWei = (ether: string) => {
     if (!ether || isNaN(parseFloat(ether))) return BigInt(0);
     return BigInt(Math.floor(parseFloat(ether) * 1e18));
@@ -19,7 +24,7 @@ export const PayInvoice = ({ proposalID, amount }: PayInvoiceProps) => {
   });
 
   return (
-    <button className="btn btn-primary" onClick={() => payTheInvoice()}>
+    <button className="btn btn-primary" onClick={() => payTheInvoice()} disabled={invoiceStatus}>
       Pay
     </button>
   );
