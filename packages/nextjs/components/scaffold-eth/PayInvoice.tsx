@@ -18,5 +18,9 @@ export const PayInvoice = ({ proposalID, amount }: PayInvoiceProps) => {
     value: etherToWei(amount.toString()),
   });
 
-  return <button onClick={() => payTheInvoice()}>Pay</button>;
+  return (
+    <button className="btn btn-primary" onClick={() => payTheInvoice()}>
+      Pay
+    </button>
+  );
 };
