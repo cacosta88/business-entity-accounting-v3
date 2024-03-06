@@ -836,13 +836,27 @@ const Home: NextPage = () => {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Address
+                      <span>Owners</span>
+                      <span className="mr-2"></span> {/* Adjust margin as needed */}
+                      <button
+                        onClick={openModal}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 text-xs rounded shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
+                      >
+                        Add Owner
+                      </button>
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Capital
+                      <span>Capital</span>
+                      <span className="mr-2"></span>
+                      <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 text-xs rounded shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
+                        onClick={openIncreaseEquityModal}
+                      >
+                        Increase Equity
+                      </button>
                     </th>
                     <th
                       scope="col"
@@ -869,255 +883,185 @@ const Home: NextPage = () => {
                 </tbody>
               </table>
             </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <button onClick={openModal} className="btn btn-primary">
-                Add Equity Owner
-              </button>
-              <button className="btn btn-primary mt-4" onClick={openIncreaseEquityModal}>
-                Increase Equity
-              </button>
-              {isModalOpen && (
+
+            {isModalOpen && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: "10%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  zIndex: 1000,
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  padding: "20px",
+                  borderRadius: "10px",
+                }}
+              >
                 <div
+                  ref={modalRef}
                   style={{
-                    position: "fixed",
-                    top: "10%",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    zIndex: 1000,
-                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    backgroundColor: "white",
                     padding: "20px",
                     borderRadius: "10px",
+                    color: "black",
+                    backgroundImage: "url(background1.png)",
                   }}
                 >
-                  <div
-                    ref={modalRef}
-                    style={{
-                      backgroundColor: "white",
-                      padding: "20px",
-                      borderRadius: "10px",
-                      color: "black",
-                      backgroundImage: "url(background1.png)",
-                    }}
-                  >
-                    <button onClick={closeModal} className="btn btn-sm btn-circle absolute right-2 top-2">
-                      ✕
-                    </button>
-                    <div className="flex justify-center">
-                      {["Add Owner", "Active Proposals", "Deposit", "Events"].map((tabText, index) => (
-                        <a
-                          key={index}
-                          className={`tab tab-lg ${currentPage === index + 1 ? "tab-active" : ""}`}
-                          onClick={() => handleTabChange(index + 1)}
+                  <button onClick={closeModal} className="btn btn-sm btn-circle absolute right-2 top-2">
+                    ✕
+                  </button>
+                  <div className="flex justify-center">
+                    {["Add Owner", "Active Proposals", "Deposit", "Events"].map((tabText, index) => (
+                      <a
+                        key={index}
+                        className={`tab tab-lg ${currentPage === index + 1 ? "tab-active" : ""}`}
+                        onClick={() => handleTabChange(index + 1)}
+                        style={{
+                          ...(currentPage === index + 1
+                            ? { ...selectedTabStyle, backgroundPosition: "center" }
+                            : { ...unselectedTabStyle, backgroundPosition: "center" }),
+                          backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
+                          filter: currentPage === index + 1 ? "brightness(100%)" : "none", // Adjust brightness for better readability
+                        }}
+                      >
+                        {tabText}
+                      </a>
+                    ))}
+                  </div>
+                  <br />
+                  {currentPage === 1 && (
+                    <div style={activeTab === 1 ? activeTabContentStyle : tabContentStyle}>
+                      <div style={{ display: "flex", alignItems: "center", marginBottom: "20px", marginLeft: "-60px" }}>
+                        <span
                           style={{
-                            ...(currentPage === index + 1
-                              ? { ...selectedTabStyle, backgroundPosition: "center" }
-                              : { ...unselectedTabStyle, backgroundPosition: "center" }),
-                            backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
-                            filter: currentPage === index + 1 ? "brightness(100%)" : "none", // Adjust brightness for better readability
+                            marginRight: "23px",
+                            background: "rgba(0, 0, 0, 0.6)",
+                            padding: "5px",
+                            borderRadius: "5px",
+                            color: "white",
                           }}
                         >
-                          {tabText}
-                        </a>
-                      ))}
-                    </div>
-                    <br />
-                    {currentPage === 1 && (
-                      <div style={activeTab === 1 ? activeTabContentStyle : tabContentStyle}>
-                        <div
-                          style={{ display: "flex", alignItems: "center", marginBottom: "20px", marginLeft: "-60px" }}
+                          New owner address:
+                        </span>
+
+                        <AddressInput
+                          onChange={setnewOwnerAddress}
+                          value={newOwnerAddress}
+                          placeholder="New owner address"
+                        />
+                      </div>
+                      <br />
+                      <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                        <span
+                          style={{
+                            marginRight: "23px",
+                            background: "rgba(0, 0, 0, 0.6)",
+                            padding: "5px",
+                            borderRadius: "5px",
+                            color: "white",
+                          }}
                         >
-                          <span
-                            style={{
-                              marginRight: "23px",
-                              background: "rgba(0, 0, 0, 0.6)",
-                              padding: "5px",
-                              borderRadius: "5px",
-                              color: "white",
-                            }}
-                          >
-                            New owner address:
-                          </span>
-
-                          <AddressInput
-                            onChange={setnewOwnerAddress}
-                            value={newOwnerAddress}
-                            placeholder="New owner address"
-                          />
-                        </div>
-                        <br />
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-                          <span
-                            style={{
-                              marginRight: "23px",
-                              background: "rgba(0, 0, 0, 0.6)",
-                              padding: "5px",
-                              borderRadius: "5px",
-                              color: "white",
-                            }}
-                          >
-                            Capital Requirement:
-                          </span>
-                          <EtherInput
-                            onChange={handleCapitalAmountChange}
-                            value={requiredCapitalAmountToAdd}
-                            placeholder="Capital requirement"
-                          />
-                        </div>
-                        <br />
-                        <button className="btn btn-primary" onClick={() => addOwner()}>
-                          Create New Owner Proposal
+                          Capital Requirement:
+                        </span>
+                        <EtherInput
+                          onChange={handleCapitalAmountChange}
+                          value={requiredCapitalAmountToAdd}
+                          placeholder="Capital requirement"
+                        />
+                      </div>
+                      <br />
+                      <button className="btn btn-primary" onClick={() => addOwner()}>
+                        Create New Owner Proposal
+                      </button>
+                    </div>
+                  )}
+                  {currentPage === 2 && (
+                    <div style={activeTab === 2 ? activeTabContentStyle : tabContentStyle}>
+                      {activeProposals.length > 0 ? (
+                        <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="bg-slate-100">
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                ID
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Proposed Address
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Proposed Capital
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Votes
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Is Capital Increase
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {activeProposals.map((proposal: Proposal, index: number) => (
+                              <tr key={index} className="hover:bg-gray-100">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  <Capitaladjvote proposalID={proposal.id} />
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {proposal.address}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {proposal.capital}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {proposal.votes}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {proposal.isCapitalIncrease ? "Yes" : "No"}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p
+                          style={{
+                            background: "rgba(0, 0, 0, 0.6)",
+                            padding: "5px",
+                            borderRadius: "5px",
+                            color: "white",
+                          }}
+                        >
+                          No active proposals at the moment
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {currentPage === 3 && (
+                    <div style={activeTab === 3 ? activeTabContentStyle : tabContentStyle}>
+                      {isOwner && isDepositable && (
+                        <button className="btn btn-primary" onClick={() => depositAmount()}>
+                          Deposit {depositableAmount ? `${(Number(depositableAmount) / 1e18).toFixed(2)} eth` : ""}
+                          <br />
+                          to attain <br />
+                          ownership
                         </button>
-                      </div>
-                    )}
-                    {currentPage === 2 && (
-                      <div style={activeTab === 2 ? activeTabContentStyle : tabContentStyle}>
-                        {activeProposals.length > 0 ? (
-                          <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
-                            <thead>
-                              <tr className="bg-slate-100">
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  ID
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Proposed Address
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Proposed Capital
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Votes
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Is Capital Increase
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {activeProposals.map((proposal: Proposal, index: number) => (
-                                <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    <Capitaladjvote proposalID={proposal.id} />
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {proposal.address}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {proposal.capital}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {proposal.votes}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {proposal.isCapitalIncrease ? "Yes" : "No"}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        ) : (
-                          <p
-                            style={{
-                              background: "rgba(0, 0, 0, 0.6)",
-                              padding: "5px",
-                              borderRadius: "5px",
-                              color: "white",
-                            }}
-                          >
-                            No active proposals at the moment
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {currentPage === 3 && (
-                      <div style={activeTab === 3 ? activeTabContentStyle : tabContentStyle}>
-                        {isOwner && isDepositable && (
-                          <button className="btn btn-primary" onClick={() => depositAmount()}>
-                            Deposit {depositableAmount ? `${(Number(depositableAmount) / 1e18).toFixed(2)} eth` : ""}
-                            <br />
-                            to attain <br />
-                            ownership
-                          </button>
-                        )}
+                      )}
 
-                        {!isDepositable && (
-                          <div>
-                            <p
-                              style={{
-                                background: "rgba(0, 0, 0, 0.6)",
-                                padding: "5px",
-                                borderRadius: "5px",
-                                color: "white",
-                              }}
-                            >
-                              Your are not authorized to deposit
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {currentPage === 4 && (
-                      <div style={activeTab === 4 ? activeTabContentStyle : tabContentStyle}>
-                        {depositEvents.length > 0 ? (
-                          <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
-                            <thead>
-                              <tr className="bg-slate-100">
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Depositor Address
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Amount <br />
-                                  Deposited <br /> as Capital
-                                  <br /> Contribution
-                                </th>
-                                <th
-                                  scope="col"
-                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                >
-                                  Block Timestamp
-                                </th>
-                                {/* Add other headers here */}
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {depositEvents.map((event: any, index: number) => (
-                                <tr key={index} className="hover:bg-gray-100">
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {event.address}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {event.amount.toFixed(2)} ETH
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {new Date(event.timestamp).toLocaleString()}{" "}
-                                    {/* Convert timestamp to readable format */}
-                                  </td>
-                                  {/* Add other data cells here */}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        ) : (
+                      {!isDepositable && (
+                        <div>
                           <p
                             style={{
                               background: "rgba(0, 0, 0, 0.6)",
@@ -1126,15 +1070,76 @@ const Home: NextPage = () => {
                               color: "white",
                             }}
                           >
-                            No Deposit Events Yet
+                            Your are not authorized to deposit
                           </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {currentPage === 4 && (
+                    <div style={activeTab === 4 ? activeTabContentStyle : tabContentStyle}>
+                      {depositEvents.length > 0 ? (
+                        <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="bg-slate-100">
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Depositor Address
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Amount <br />
+                                Deposited <br /> as Capital
+                                <br /> Contribution
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Block Timestamp
+                              </th>
+                              {/* Add other headers here */}
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {depositEvents.map((event: any, index: number) => (
+                              <tr key={index} className="hover:bg-gray-100">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {event.address}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {event.amount.toFixed(2)} ETH
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {new Date(event.timestamp).toLocaleString()}{" "}
+                                  {/* Convert timestamp to readable format */}
+                                </td>
+                                {/* Add other data cells here */}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p
+                          style={{
+                            background: "rgba(0, 0, 0, 0.6)",
+                            padding: "5px",
+                            borderRadius: "5px",
+                            color: "white",
+                          }}
+                        >
+                          No Deposit Events Yet
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           <br />
