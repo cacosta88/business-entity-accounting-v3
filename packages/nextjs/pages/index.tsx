@@ -52,8 +52,8 @@ const Home: NextPage = () => {
   };
 
   const etherToWei = (ether: string) => {
-    if (!ether || isNaN(parseFloat(ether))) return BigInt(0); // Handle invalid or empty inputs
-    return BigInt(Math.floor(parseFloat(ether) * 1e18)); // Convert Ether to Wei
+    if (!ether || isNaN(parseFloat(ether))) return BigInt(0);
+    return BigInt(Math.floor(parseFloat(ether) * 1e18));
   };
 
   const { data: arrayOfOwnersAndCapital } = useScaffoldContractRead({
@@ -869,7 +869,7 @@ const Home: NextPage = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {owners.addresses.map((address, index) => {
                     const capital = owners.capitals[index] / 1e18;
-                    if (capital <= 0) return null; // Skip rows with capital <= 0
+                    if (capital <= 0) return null;
                     return (
                       <tr key={index} className="hover:bg-gray-100">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{address}</td>
@@ -921,7 +921,7 @@ const Home: NextPage = () => {
                             ? { ...selectedTabStyle, backgroundPosition: "center" }
                             : { ...unselectedTabStyle, backgroundPosition: "center" }),
                           backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
-                          filter: currentPage === index + 1 ? "brightness(100%)" : "none", // Adjust brightness for better readability
+                          filter: currentPage === index + 1 ? "brightness(100%)" : "none",
                         }}
                       >
                         {tabText}
@@ -1432,7 +1432,7 @@ const Home: NextPage = () => {
                             ? { ...selectedTabStyle, backgroundPosition: "center" }
                             : { ...unselectedTabStyle, backgroundPosition: "center" }),
                           backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
-                          filter: currentPage === index + 1 ? "brightness(100%)" : "none", // Adjust brightness for better readability
+                          filter: currentPage === index + 1 ? "brightness(100%)" : "none",
                         }}
                       >
                         {tabText}
@@ -1503,7 +1503,6 @@ const Home: NextPage = () => {
                         <button
                           className="btn btn-primary"
                           onClick={() => {
-                            // Trigger contract write of the stored percentage
                             proposeBatchCapitalIncrease();
                           }}
                         >
@@ -1693,7 +1692,6 @@ const Home: NextPage = () => {
                           id="ok-btn"
                           className="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
                           onClick={() => {
-                            // Trigger contract write of the stored percentage
                             setEstimatedEarnedRevenue();
                           }}
                         >
@@ -1795,13 +1793,13 @@ const Home: NextPage = () => {
                       }}
                     >
                       <div
-                        ref={expensesModalRef} // If you are using a ref like in your other modals
+                        ref={expensesModalRef}
                         style={{
                           backgroundColor: "white",
                           padding: "20px",
                           borderRadius: "10px",
                           color: "black",
-                          backgroundImage: "url(background1.png)", // If you have a specific background
+                          backgroundImage: "url(background1.png)",
                         }}
                       >
                         <button onClick={closeExpensesModal} className="btn btn-sm btn-circle absolute right-2 top-2">
@@ -1851,7 +1849,7 @@ const Home: NextPage = () => {
                                   padding: "5px",
                                   borderRadius: "5px",
                                   color: "white",
-                                  //center text
+
                                   display: "flex",
                                   justifyContent: "center",
                                 }}
@@ -2213,13 +2211,16 @@ const Home: NextPage = () => {
                   </tr>
                 </tbody>
               </table>
+              <br />
               <button
                 onClick={() => {
                   withdrawDistribution();
                 }}
                 className="btn btn-primary"
               >
-                Withdraw Distribution <br />
+                Withdraw Distribution
+                <br />
+                <br />
                 Available Amount: {pendingWithdrawalsArray}
               </button>
             </div>
