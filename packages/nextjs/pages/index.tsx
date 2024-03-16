@@ -834,29 +834,31 @@ const Home: NextPage = () => {
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      <span>Owners</span>
-                      <span className="mr-2"></span> {/* Adjust margin as needed */}
                       <button
                         onClick={openModal}
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 text-xs rounded shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
                       >
                         Add Owner
                       </button>
+                      <br />
+                      <br />
+                      <span>Owners</span>
+                      <span className="mr-2"></span> {/* Adjust margin as needed */}
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="flex flex-col items-center justify-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      <span>Capital</span>
-                      <span className="mr-2"></span>
                       <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 text-xs rounded shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
                         onClick={openIncreaseEquityModal}
                       >
                         Increase Equity
                       </button>
+                      <br />
+                      <span>Capital</span>
                     </th>
                     <th
                       scope="col"
