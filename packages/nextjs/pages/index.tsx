@@ -2213,6 +2213,15 @@ const Home: NextPage = () => {
                   </tr>
                 </tbody>
               </table>
+              <button
+                onClick={() => {
+                  withdrawDistribution();
+                }}
+                className="btn btn-primary"
+              >
+                Withdraw Distribution <br />
+                Available Amount: {pendingWithdrawalsArray}
+              </button>
             </div>
             {isPeriodCloseModalOpen && (
               <div
@@ -2352,30 +2361,9 @@ const Home: NextPage = () => {
                 </div>
               </div>
             )}
-
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <button
-                onClick={() => {
-                  withdrawDistribution();
-                }}
-                className="btn btn-primary"
-              >
-                Withdraw Distribution <br />
-                Available Amount: {pendingWithdrawalsArray}
-              </button>
-            </div>
           </div>
           <br />
           <br />
-
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <p></p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center min-w-[250px] w-auto rounded-3xl break-words">
-              <p></p>
-            </div>
-          </div>
         </div>
       </div>
     </>
