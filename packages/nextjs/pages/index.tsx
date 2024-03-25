@@ -22,14 +22,19 @@ interface Proposal {
 }
 
 const Home: NextPage = () => {
-  const [activeTab, setActiveTab] = useState(1);
+  //const [activeTab, setActiveTab] = useState(1);
+  const [activeTabs, setActiveTabs] = useState({
+    add_owner: 1,
+    increase_equity: 1,
+    issue_invoice: 1,
+    revenue_realized: 1,
+    expenses: 1,
+    close_period: 1,
+    // Add more as needed
+  });
 
-  const handleTabChange = (tabNumber: number) => {
-    setActiveTab(tabNumber);
-
-    setTimeout(() => {
-      goToPage(tabNumber);
-    }, 10);
+  const handleTabChange = (tabGroup: string, tabNumber: number) => {
+    setActiveTabs(prev => ({ ...prev, [tabGroup]: tabNumber }));
   };
 
   const tabContentStyle: CSSProperties = {
@@ -65,12 +70,8 @@ const Home: NextPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
-  const goToPage = (pageNumber: number) => setCurrentPage(pageNumber);
 
   //eslint-disable-next-line
   const handleClickOutside = (event: MouseEvent) => {
@@ -916,14 +917,14 @@ const Home: NextPage = () => {
                     {["Add Owner", "Active Proposals", "Deposit", "Events"].map((tabText, index) => (
                       <a
                         key={index}
-                        className={`tab tab-lg ${currentPage === index + 1 ? "tab-active" : ""}`}
-                        onClick={() => handleTabChange(index + 1)}
+                        className={`tab tab-lg ${activeTabs.add_owner === index + 1 ? "tab-active" : ""}`}
+                        onClick={() => handleTabChange("add_owner", index + 1)}
                         style={{
-                          ...(currentPage === index + 1
+                          ...(activeTabs.add_owner === index + 1
                             ? { ...selectedTabStyle, backgroundPosition: "center" }
                             : { ...unselectedTabStyle, backgroundPosition: "center" }),
-                          backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
-                          filter: currentPage === index + 1 ? "brightness(100%)" : "none",
+                          backgroundImage: activeTabs.add_owner === index + 1 ? "url(button2.png)" : "none",
+                          filter: activeTabs.add_owner === index + 1 ? "brightness(100%)" : "none",
                         }}
                       >
                         {tabText}
@@ -931,8 +932,8 @@ const Home: NextPage = () => {
                     ))}
                   </div>
                   <br />
-                  {currentPage === 1 && (
-                    <div style={activeTab === 1 ? activeTabContentStyle : tabContentStyle}>
+                  {activeTabs.add_owner === 1 && (
+                    <div style={activeTabs.add_owner === 1 ? activeTabContentStyle : tabContentStyle}>
                       <div style={{ display: "flex", alignItems: "center", marginBottom: "20px", marginLeft: "-60px" }}>
                         <span
                           style={{
@@ -977,8 +978,8 @@ const Home: NextPage = () => {
                       </button>
                     </div>
                   )}
-                  {currentPage === 2 && (
-                    <div style={activeTab === 2 ? activeTabContentStyle : tabContentStyle}>
+                  {activeTabs.add_owner === 2 && (
+                    <div style={activeTabs.add_owner === 2 ? activeTabContentStyle : tabContentStyle}>
                       {activeProposals.length > 0 ? (
                         <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
                           <thead>
@@ -1051,8 +1052,8 @@ const Home: NextPage = () => {
                       )}
                     </div>
                   )}
-                  {currentPage === 3 && (
-                    <div style={activeTab === 3 ? activeTabContentStyle : tabContentStyle}>
+                  {activeTabs.add_owner === 3 && (
+                    <div style={activeTabs.add_owner === 3 ? activeTabContentStyle : tabContentStyle}>
                       {isOwner && isDepositable && (
                         <button className="btn btn-primary" onClick={() => depositAmount()}>
                           Deposit {depositableAmount ? `${(Number(depositableAmount) / 1e18).toFixed(2)} eth` : ""}
@@ -1078,8 +1079,8 @@ const Home: NextPage = () => {
                       )}
                     </div>
                   )}
-                  {currentPage === 4 && (
-                    <div style={activeTab === 4 ? activeTabContentStyle : tabContentStyle}>
+                  {activeTabs.add_owner === 4 && (
+                    <div style={activeTabs.add_owner === 4 ? activeTabContentStyle : tabContentStyle}>
                       {depositEvents.length > 0 ? (
                         <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
                           <thead>
@@ -1427,21 +1428,21 @@ const Home: NextPage = () => {
                     ].map((tabText, index) => (
                       <a
                         key={index}
-                        className={`tab tab-lg ${currentPage === index + 1 ? "tab-active" : ""}`}
-                        onClick={() => handleTabChange(index + 1)}
+                        className={`tab tab-lg ${activeTabs.increase_equity === index + 1 ? "tab-active" : ""}`}
+                        onClick={() => handleTabChange("increase_equity", index + 1)}
                         style={{
-                          ...(currentPage === index + 1
+                          ...(activeTabs.increase_equity === index + 1
                             ? { ...selectedTabStyle, backgroundPosition: "center" }
                             : { ...unselectedTabStyle, backgroundPosition: "center" }),
-                          backgroundImage: currentPage === index + 1 ? "url(button2.png)" : "none",
-                          filter: currentPage === index + 1 ? "brightness(100%)" : "none",
+                          backgroundImage: activeTabs.increase_equity === index + 1 ? "url(button2.png)" : "none",
+                          filter: activeTabs.increase_equity === index + 1 ? "brightness(100%)" : "none",
                         }}
                       >
                         {tabText}
                       </a>
                     ))}
-                    {currentPage === 1 && (
-                      <div style={activeTab === 1 ? activeTabContentStyle : tabContentStyle}>
+                    {activeTabs.increase_equity === 1 && (
+                      <div style={activeTabs.increase_equity === 1 ? activeTabContentStyle : tabContentStyle}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
                           <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
                             <thead className="bg-gray-50">
@@ -1512,8 +1513,8 @@ const Home: NextPage = () => {
                         </button>
                       </div>
                     )}
-                    {currentPage === 2 && (
-                      <div style={activeTab === 2 ? activeTabContentStyle : tabContentStyle}>
+                    {activeTabs.increase_equity === 2 && (
+                      <div style={activeTabs.increase_equity === 2 ? activeTabContentStyle : tabContentStyle}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
                           <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
                             <thead className="bg-gray-50">
@@ -1576,8 +1577,8 @@ const Home: NextPage = () => {
                         </button>
                       </div>
                     )}
-                    {currentPage === 3 && (
-                      <div style={activeTab === 3 ? activeTabContentStyle : tabContentStyle}>
+                    {activeTabs.increase_equity === 3 && (
+                      <div style={activeTabs.increase_equity === 3 ? activeTabContentStyle : tabContentStyle}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}></div>
                         {isBatchDepositable && (
                           <button
@@ -1596,8 +1597,8 @@ const Home: NextPage = () => {
                         )}
                       </div>
                     )}
-                    {currentPage === 4 && (
-                      <div style={activeTab === 4 ? activeTabContentStyle : tabContentStyle}>
+                    {activeTabs.increase_equity === 4 && (
+                      <div style={activeTabs.increase_equity === 4 ? activeTabContentStyle : tabContentStyle}>
                         <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}></div>
                         {isBatchDepositable && (
                           <button
@@ -1611,7 +1612,8 @@ const Home: NextPage = () => {
                         )}
                         {!isBatchDepositable && (
                           <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-                            You are not authorized to deposit
+                            You are not authorized to finalize capital increase or there are no capital increase
+                            proposals to finalize
                           </div>
                         )}
                       </div>
