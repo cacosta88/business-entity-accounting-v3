@@ -22,7 +22,6 @@ interface Proposal {
 }
 
 const Home: NextPage = () => {
-  //const [activeTab, setActiveTab] = useState(1);
   const [activeTabs, setActiveTabs] = useState({
     add_owner: 1,
     increase_equity: 1,
@@ -30,7 +29,6 @@ const Home: NextPage = () => {
     revenue_realized: 1,
     expenses: 1,
     close_period: 1,
-    // Add more as needed
   });
 
   const handleTabChange = (tabGroup: string, tabNumber: number) => {
