@@ -1709,6 +1709,12 @@ const Home: NextPage = () => {
                   <tr className="bg-slate-100">
                     <th
                       scope="col"
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions {/* New Actions column */}
+                    </th>
+                    <th
+                      scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Income Statement
@@ -1717,48 +1723,48 @@ const Home: NextPage = () => {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Period: {currentPeriodNumber}{" "}
-                    </th>{" "}
-                    {/* Blank cell added */}
+                      Period: {currentPeriodNumber}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   <tr>
-                    <td className="flex items-start justify-start px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       <button
                         onClick={openInvoiceModal}
                         className="px-2 py-1 text-xs font-medium leading-none text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                       >
-                        Issue <br />
-                        Invoice
+                        Issue Invoice
                       </button>
-
-                      <span className="ml-2">Gross Receipts</span>
                     </td>
-
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
+                      <span>Gross Receipts</span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {(grossReceipts / 10 ** 18).toFixed(4)}
                     </td>
                   </tr>
                   <tr>
-                    <td className="flex items-start justify-start px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       <button
                         onClick={openPercentageModal}
                         className="px-2 py-1 text-xs font-medium leading-none text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                       >
                         Adjust
                       </button>
-                      <span className="ml-2">Estimated Revenue Percentage</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
+                      <span>Estimated Revenue Percentage</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {estimatedEarnedRevenuePercentageNumber}%
                     </td>
                   </tr>
                   <tr>
-                    <td
-                      className="py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-                      style={{ paddingLeft: "38px" }}
-                    >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {/* Empty cell for alignment */}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
                       Estimated Earned Revenue
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -1766,444 +1772,33 @@ const Home: NextPage = () => {
                     </td>
                   </tr>
                   <tr>
-                    <td className="flex items-start justify-start px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       <button
                         onClick={openExpensesModal}
-                        style={{ marginRight: "8px" }}
                         className="px-2 py-1 text-xs font-medium leading-none text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                       >
-                        Manage <br /> Expenses
+                        Manage Expenses
                       </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
                       Total Expenses
                     </td>
-
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {(totalExpenses / 10 ** 18).toFixed(4)}
                     </td>
                   </tr>
-                  {isExpensesModalOpen && (
-                    <div
-                      style={{
-                        position: "fixed",
-                        top: "10%",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        zIndex: 1000,
-                        backgroundColor: "rgba(0, 0, 0, 0.6)",
-                        padding: "20px",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      <div
-                        ref={expensesModalRef}
-                        style={{
-                          backgroundColor: "white",
-                          padding: "20px",
-                          borderRadius: "10px",
-                          color: "black",
-                          backgroundImage: "url(background1.png)",
-                        }}
-                      >
-                        <button onClick={closeExpensesModal} className="btn btn-sm btn-circle absolute right-2 top-2">
-                          ✕
-                        </button>
-                        <div className="flex justify-center">
-                          {[
-                            "Propose Expense Accrual",
-                            "Vote on Active Expense Accrual",
-                            "Settle Expense",
-                            "Paid Expenses",
-                          ].map((tabText, index) => (
-                            <a
-                              key={index}
-                              className={`tab tab-lg ${expensesTab === index + 1 ? "tab-active" : ""}`}
-                              onClick={() => handleExpensesTabChange(index + 1)}
-                              style={{
-                                ...(expensesTab === index + 1
-                                  ? { ...selectedTabStyle, backgroundPosition: "center" }
-                                  : { ...unselectedTabStyle, backgroundPosition: "center" }),
-                                backgroundImage: expensesTab === index + 1 ? "url(button2.png)" : "none",
-                                filter: expensesTab === index + 1 ? "brightness(100%)" : "none",
-                              }}
-                            >
-                              {tabText}
-                            </a>
-                          ))}
-                        </div>
-                        <br />
-
-                        {/* Content for each tab */}
-
-                        {expensesTab === 1 && (
-                          <div style={expensesTab === 1 ? activeTabContentStyle : tabContentStyle}>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginBottom: "20px",
-                                marginLeft: "-74px",
-                              }}
-                            >
-                              <span
-                                style={{
-                                  marginRight: "23px",
-                                  background: "rgba(0, 0, 0, 0.6)",
-                                  padding: "5px",
-                                  borderRadius: "5px",
-                                  color: "white",
-
-                                  display: "flex",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                Expense Recipient:
-                              </span>
-                              <AddressInput
-                                onChange={setExpenseRecipientAddress}
-                                value={expenseRecipientAddress}
-                                placeholder="Expense recipient address"
-                              />
-                            </div>
-
-                            <br />
-
-                            <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-                              <span
-                                style={{
-                                  marginRight: "23px",
-                                  background: "rgba(0, 0, 0, 0.6)",
-                                  padding: "5px",
-                                  borderRadius: "5px",
-                                  color: "white",
-                                }}
-                              >
-                                Expense Amount:
-                              </span>
-                              <EtherInput
-                                onChange={setExpenseAmount}
-                                value={expenseAmount}
-                                placeholder="Expense amount"
-                              />
-                            </div>
-
-                            <br />
-
-                            <div style={{ display: "flex", alignItems: "center", marginLeft: "-80px" }}>
-                              <span
-                                style={{
-                                  marginRight: "23px",
-                                  background: "rgba(0, 0, 0, 0.6)",
-                                  padding: "5px",
-                                  borderRadius: "5px",
-                                  color: "white",
-                                }}
-                              >
-                                Expense Description:
-                              </span>
-                              <InputBase
-                                onChange={setExpenseDescription}
-                                value={expenseDescription}
-                                placeholder="Expense description"
-                              />
-                            </div>
-
-                            <br />
-
-                            <span style={{ marginRight: "23px", padding: "30px", borderRadius: "5px", color: "white" }}>
-                              <button className="btn btn-primary" onClick={() => proposeExpense()}>
-                                Propose Expense Accrual
-                              </button>
-                            </span>
-                          </div>
-                        )}
-
-                        {expensesTab === 2 && (
-                          <div>
-                            <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
-                              <thead>
-                                <tr className="bg-slate-100">
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense ID
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense Description
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense Recipient
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense Amount
-                                  </th>
-
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Votes
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Status
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Period Issued
-                                  </th>
-                                </tr>
-                              </thead>
-
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {arrayOfExpenseProposalsArray
-                                  .filter((expenseProposal: any) => expenseProposal.status === 0)
-                                  .map((expenseProposal: any, index: number) => (
-                                    <tr key={expenseProposal.id} className="hover:bg-gray-100">
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <ExpAdjVote proposalID={expenseProposal.id} />
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {arrayOfExpenseProposalDescriptionsArray[index]}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.recipient}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.amount}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.votes}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.status === 0 && "Proposed"}
-                                        {expenseProposal.status === 1 && "Approved"}
-                                        {expenseProposal.status === 2 && "Settled"}
-                                        {expenseProposal.status === 3 && "Canceled"}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.period}
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-                        {expensesTab === 3 && (
-                          <div>
-                            <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
-                              <thead>
-                                <tr className="bg-slate-100">
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense ID
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense Description
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense Recipient
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Expense Amount
-                                  </th>
-
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Votes
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Status
-                                  </th>
-
-                                  <th
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Period Issued
-                                  </th>
-                                </tr>
-                              </thead>
-
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {arrayOfExpenseProposalsArray
-                                  .filter((expenseProposal: any) => expenseProposal.status === 1)
-                                  .map((expenseProposal: any, index: number) => (
-                                    <tr key={expenseProposal.id} className="hover:bg-gray-100">
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        <ExpSettle proposalID={expenseProposal.id} />
-                                        <br />
-                                        <ExpCancel proposalID={expenseProposal.id} />
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {arrayOfExpenseApprovedDescriptionsArray[index]}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.recipient}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.amount}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.votes}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.status === 0 && "Proposed"}
-                                        {expenseProposal.status === 1 && "Approved"}
-                                        {expenseProposal.status === 2 && "Settled"}
-                                        {expenseProposal.status === 3 && "Canceled"}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.period}
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-
-                        {expensesTab === 4 && (
-                          <div>
-                            <div>
-                              <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                  <tr>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Expense ID
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Expense Description
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Expense Recipient
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Expense Amount
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Votes
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Status
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Period Issued
-                                    </th>
-                                    <th
-                                      scope="col"
-                                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                      Period Paid
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                  {ExpenseSettledEventsArray.map((expenseProposal: any, index: number) => (
-                                    <tr key={index} className="hover:bg-gray-100">
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.expenseID}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.description}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.recipient}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.amount}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.votes}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.status === 0 && "Proposed"}
-                                        {expenseProposal.status === 1 && "Approved"}
-                                        {expenseProposal.status === 2 && "Settled"}
-                                        {expenseProposal.status === 3 && "Canceled"}
-                                      </td>
-
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.period}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {expenseProposal.accountingPeriod}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
                   <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       <button
                         onClick={openPeriodCloseModal}
-                        style={{ marginRight: "8px" }}
                         className="px-2 py-1 text-xs font-medium leading-none text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
                       >
-                        Manage <br /> Period <br />
-                        Close
+                        Manage Period Close
                       </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
                       Projected Operating Income
                     </td>
-
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {(
                         (grossReceipts * (estimatedEarnedRevenuePercentageNumber / 100) - totalExpenses) /
@@ -2213,6 +1808,411 @@ const Home: NextPage = () => {
                   </tr>
                 </tbody>
               </table>
+              {isExpensesModalOpen && (
+                <div
+                  style={{
+                    position: "fixed",
+                    top: "10%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 1000,
+                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    padding: "20px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <div
+                    ref={expensesModalRef}
+                    style={{
+                      backgroundColor: "white",
+                      padding: "20px",
+                      borderRadius: "10px",
+                      color: "black",
+                      backgroundImage: "url(background1.png)",
+                    }}
+                  >
+                    <button onClick={closeExpensesModal} className="btn btn-sm btn-circle absolute right-2 top-2">
+                      ✕
+                    </button>
+                    <div className="flex justify-center">
+                      {[
+                        "Propose Expense Accrual",
+                        "Vote on Active Expense Accrual",
+                        "Settle Expense",
+                        "Paid Expenses",
+                      ].map((tabText, index) => (
+                        <a
+                          key={index}
+                          className={`tab tab-lg ${expensesTab === index + 1 ? "tab-active" : ""}`}
+                          onClick={() => handleExpensesTabChange(index + 1)}
+                          style={{
+                            ...(expensesTab === index + 1
+                              ? { ...selectedTabStyle, backgroundPosition: "center" }
+                              : { ...unselectedTabStyle, backgroundPosition: "center" }),
+                            backgroundImage: expensesTab === index + 1 ? "url(button2.png)" : "none",
+                            filter: expensesTab === index + 1 ? "brightness(100%)" : "none",
+                          }}
+                        >
+                          {tabText}
+                        </a>
+                      ))}
+                    </div>
+                    <br />
+
+                    {/* Content for each tab */}
+
+                    {expensesTab === 1 && (
+                      <div style={expensesTab === 1 ? activeTabContentStyle : tabContentStyle}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginBottom: "20px",
+                            marginLeft: "-74px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              marginRight: "23px",
+                              background: "rgba(0, 0, 0, 0.6)",
+                              padding: "5px",
+                              borderRadius: "5px",
+                              color: "white",
+
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            Expense Recipient:
+                          </span>
+                          <AddressInput
+                            onChange={setExpenseRecipientAddress}
+                            value={expenseRecipientAddress}
+                            placeholder="Expense recipient address"
+                          />
+                        </div>
+
+                        <br />
+
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                          <span
+                            style={{
+                              marginRight: "23px",
+                              background: "rgba(0, 0, 0, 0.6)",
+                              padding: "5px",
+                              borderRadius: "5px",
+                              color: "white",
+                            }}
+                          >
+                            Expense Amount:
+                          </span>
+                          <EtherInput onChange={setExpenseAmount} value={expenseAmount} placeholder="Expense amount" />
+                        </div>
+
+                        <br />
+
+                        <div style={{ display: "flex", alignItems: "center", marginLeft: "-80px" }}>
+                          <span
+                            style={{
+                              marginRight: "23px",
+                              background: "rgba(0, 0, 0, 0.6)",
+                              padding: "5px",
+                              borderRadius: "5px",
+                              color: "white",
+                            }}
+                          >
+                            Expense Description:
+                          </span>
+                          <InputBase
+                            onChange={setExpenseDescription}
+                            value={expenseDescription}
+                            placeholder="Expense description"
+                          />
+                        </div>
+
+                        <br />
+
+                        <span style={{ marginRight: "23px", padding: "30px", borderRadius: "5px", color: "white" }}>
+                          <button className="btn btn-primary" onClick={() => proposeExpense()}>
+                            Propose Expense Accrual
+                          </button>
+                        </span>
+                      </div>
+                    )}
+
+                    {expensesTab === 2 && (
+                      <div>
+                        <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="bg-slate-100">
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense ID
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense Description
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense Recipient
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense Amount
+                              </th>
+
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Votes
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Status
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Period Issued
+                              </th>
+                            </tr>
+                          </thead>
+
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {arrayOfExpenseProposalsArray
+                              .filter((expenseProposal: any) => expenseProposal.status === 0)
+                              .map((expenseProposal: any, index: number) => (
+                                <tr key={expenseProposal.id} className="hover:bg-gray-100">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <ExpAdjVote proposalID={expenseProposal.id} />
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {arrayOfExpenseProposalDescriptionsArray[index]}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.recipient}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.amount}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.votes}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.status === 0 && "Proposed"}
+                                    {expenseProposal.status === 1 && "Approved"}
+                                    {expenseProposal.status === 2 && "Settled"}
+                                    {expenseProposal.status === 3 && "Canceled"}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.period}
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {expensesTab === 3 && (
+                      <div>
+                        <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="bg-slate-100">
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense ID
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense Description
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense Recipient
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Expense Amount
+                              </th>
+
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Votes
+                              </th>
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Status
+                              </th>
+
+                              <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                Period Issued
+                              </th>
+                            </tr>
+                          </thead>
+
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {arrayOfExpenseProposalsArray
+                              .filter((expenseProposal: any) => expenseProposal.status === 1)
+                              .map((expenseProposal: any, index: number) => (
+                                <tr key={expenseProposal.id} className="hover:bg-gray-100">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <ExpSettle proposalID={expenseProposal.id} />
+                                    <br />
+                                    <ExpCancel proposalID={expenseProposal.id} />
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {arrayOfExpenseApprovedDescriptionsArray[index]}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.recipient}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.amount}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.votes}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.status === 0 && "Proposed"}
+                                    {expenseProposal.status === 1 && "Approved"}
+                                    {expenseProposal.status === 2 && "Settled"}
+                                    {expenseProposal.status === 3 && "Canceled"}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.period}
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {expensesTab === 4 && (
+                      <div>
+                        <div>
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Expense ID
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Expense Description
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Expense Recipient
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Expense Amount
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Votes
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Status
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Period Issued
+                                </th>
+                                <th
+                                  scope="col"
+                                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                >
+                                  Period Paid
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {ExpenseSettledEventsArray.map((expenseProposal: any, index: number) => (
+                                <tr key={index} className="hover:bg-gray-100">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.expenseID}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.description}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.recipient}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.amount}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.votes}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.status === 0 && "Proposed"}
+                                    {expenseProposal.status === 1 && "Approved"}
+                                    {expenseProposal.status === 2 && "Settled"}
+                                    {expenseProposal.status === 3 && "Canceled"}
+                                  </td>
+
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.period}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {expenseProposal.accountingPeriod}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               <br />
               <button
                 onClick={() => {
