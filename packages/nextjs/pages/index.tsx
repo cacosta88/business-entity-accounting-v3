@@ -1798,7 +1798,7 @@ const Home: NextPage = () => {
                         Manage Period Close
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-left">
                       Projected Operating Income
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -2215,18 +2215,20 @@ const Home: NextPage = () => {
                   </div>
                 </div>
               )}
-              <br />
-              <button
-                onClick={() => {
-                  withdrawDistribution();
-                }}
-                className="btn btn-primary"
-              >
-                Withdraw Distribution
+              <span>
                 <br />
-                <br />
-                Available Amount: {pendingWithdrawalsArray}
-              </button>
+                <button
+                  onClick={() => {
+                    withdrawDistribution();
+                  }}
+                  className="btn btn-primary"
+                >
+                  Withdraw Distribution
+                  <br />
+                  <br />
+                  Available Amount: {pendingWithdrawalsArray}
+                </button>
+              </span>
             </div>
             {isPeriodCloseModalOpen && (
               <div
