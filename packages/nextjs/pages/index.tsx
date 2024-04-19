@@ -848,7 +848,7 @@ const Home: NextPage = () => {
                     </th>
                     <th
                       scope="col"
-                      className="flex flex-col items-center justify-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 text-xs rounded shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
@@ -857,6 +857,8 @@ const Home: NextPage = () => {
                         Increase Equity
                       </button>
                       <br />
+                      <br />
+
                       <span>Capital</span>
                     </th>
                     <th
