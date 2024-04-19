@@ -2222,11 +2222,9 @@ const Home: NextPage = () => {
                     withdrawDistribution();
                   }}
                   className="btn btn-primary"
+                  disabled={pendingWithdrawalsArray === 0}
                 >
-                  Withdraw Distribution
-                  <br />
-                  <br />
-                  Available Amount: {pendingWithdrawalsArray}
+                  Withdraw Distribution - Available Amount: {pendingWithdrawalsArray}
                 </button>
               </span>
             </div>
