@@ -255,4 +255,111 @@ describe("YourContract - Business Entity Accounting", function () {
       expect(capitals[1]).to.equal(ethers.utils.parseEther("1.0"));
     });
   });
+
+  describe("Batch Capital Increase", function () {
+    beforeEach(async () => {
+      // Deposit initial capital for voting power
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should allow proposing batch capital increase", async function () {
+      const addresses = [owner1.address, owner2.address];
+      const increases = [ethers.utils.parseEther("0.5"), ethers.utils.parseEther("0.5")];
+
+      await yourContract.connect(owner1).proposeBatchCapitalIncrease(addresses, increases);
+
+      const isBatchActive = await yourContract.isBatchCapitalIncreaseActive();
+      expect(isBatchActive).to.be.true;
+    });
+
+    it("Should allow voting on batch capital increase", async function () {
+      const addresses = [owner1.address, owner2.address];
+      const increases = [ethers.utils.parseEther("0.5"), ethers.utils.parseEther("0.5")];
+
+      await yourContract.connect(owner1).proposeBatchCapitalIncrease(addresses, increases);
+      await yourContract.connect(owner2).voteForBatchCapitalIncrease();
+
+      const batchApproved = await yourContract.batchApproved();
+      expect(batchApproved).to.be.true;
+    });
+
+    it("Should allow deposit after batch approval", async function () {
+      const addresses = [owner1.address, owner2.address];
+      const increases = [ethers.utils.parseEther("0.5"), ethers.utils.parseEther("0.5")];
+
+      await yourContract.connect(owner1).proposeBatchCapitalIncrease(addresses, increases);
+      await yourContract.connect(owner2).voteForBatchCapitalIncrease();
+
+      await expect(
+        yourContract.connect(owner1).depositForBatchCapitalIncrease({
+          value: ethers.utils.parseEther("0.5"),
+        }),
+      ).to.not.be.reverted;
+    });
+  });
+
+  describe("Edge Cases and Security", function () {
+    beforeEach(async () => {
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should not allow double voting on proposals", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+      await yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount);
+
+      await expect(yourContract.connect(owner1).voteForExpenseProposal(1)).to.be.revertedWithCustomError(
+        yourContract,
+        "CanOnlyVoteOnce",
+      );
+    });
+
+    it("Should not allow settling unapproved expense", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+      await yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount);
+
+      // Try to settle before approval
+      await expect(yourContract.connect(owner1).settleExpense(1, true)).to.be.revertedWithCustomError(
+        yourContract,
+        "ExpenseNotApproved",
+      );
+    });
+
+    it("Should not allow paying invoice twice", async function () {
+      const invoiceAmount = ethers.utils.parseEther("0.5");
+
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+
+      await yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount });
+
+      await expect(yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount })).to.be.reverted; // Invoice should be removed from active list
+    });
+
+    it("Should not allow withdrawal with zero pending amount", async function () {
+      await expect(yourContract.connect(owner1).withdraw()).to.be.revertedWithCustomError(
+        yourContract,
+        "OwnerNotFound",
+      );
+    });
+
+    it("Should track invoice payment correctly", async function () {
+      const invoiceAmount = ethers.utils.parseEther("1.0");
+
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+
+      await yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount });
+
+      const isPaid = await yourContract.getInvoicePaid(1);
+      expect(isPaid).to.be.true;
+    });
+  });
 });

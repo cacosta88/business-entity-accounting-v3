@@ -1,6 +1,24 @@
+/**
+ * Local Solidity Compiler Script
+ * 
+ * This script compiles the YourContract.sol using the locally installed solc compiler.
+ * It's a workaround for environments where access to binaries.soliditylang.org is restricted.
+ * 
+ * Usage: node scripts/compile-local.js
+ * 
+ * The script:
+ * 1. Reads the contract source code
+ * 2. Compiles it using the local solc package
+ * 3. Generates Hardhat-compatible artifacts
+ * 4. Saves them to the artifacts directory
+ */
+
 const fs = require('fs');
 const path = require('path');
 const solc = require('solc');
+
+console.log('Starting local compilation...');
+console.log('Solc version:', solc.version());
 
 // Read the contract
 const contractPath = path.resolve(__dirname, '../contracts/YourContract.sol');
@@ -33,14 +51,25 @@ const output = JSON.parse(solc.compile(JSON.stringify(input)));
 
 // Check for errors
 if (output.errors) {
+  let hasErrors = false;
   output.errors.forEach((err) => {
-    console.error(err.formattedMessage);
+    if (err.severity === 'error') {
+      hasErrors = true;
+      console.error('ERROR:', err.formattedMessage);
+    } else {
+      console.warn('WARNING:', err.formattedMessage);
+    }
   });
+  
+  if (hasErrors) {
+    console.error('\n❌ Compilation failed with errors!');
+    process.exit(1);
+  }
 }
 
 // Check if compilation was successful
 if (!output.contracts || !output.contracts['YourContract.sol']) {
-  console.error('Compilation failed!');
+  console.error('❌ Compilation failed - no output generated!');
   process.exit(1);
 }
 
@@ -69,5 +98,9 @@ fs.writeFileSync(
   JSON.stringify(artifact, null, 2)
 );
 
-console.log('✓ Contract compiled successfully!');
-console.log('Artifacts saved to:', artifactsDir);
+console.log('✅ Contract compiled successfully!');
+console.log('📁 Artifacts saved to:', artifactsDir);
+console.log('\nNext steps:');
+console.log('1. Generate TypeScript types: npx typechain --target ethers-v5 --out-dir typechain-types "./artifacts/contracts/**/*.json"');
+console.log('2. Run tests: npx hardhat test --no-compile --network hardhat');
+
