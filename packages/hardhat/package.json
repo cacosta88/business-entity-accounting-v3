@@ -4,13 +4,14 @@
   "scripts": {
     "account": "hardhat run scripts/listAccount.ts",
     "chain": "hardhat node --network hardhat --no-deploy",
-    "compile": "hardhat compile",
+    "compile": "node scripts/compile-local.js && npx typechain --target ethers-v5 --out-dir typechain-types './artifacts/contracts/**/*.json'",
     "deploy": "hardhat deploy",
     "fork": "MAINNET_FORKING_ENABLED=true hardhat node --network hardhat --no-deploy",
     "generate": "hardhat run scripts/generateAccount.ts",
     "lint": "eslint --config ./.eslintrc.json --ignore-path ./.eslintignore ./*.ts ./deploy/**/*.ts ./scripts/**/*.ts ./test/**/*.ts",
     "lint-staged": "eslint --config ./.eslintrc.json --ignore-path ./.eslintignore",
-    "test": "REPORT_GAS=true hardhat test --network hardhat",
+    "test": "npm run compile && REPORT_GAS=true hardhat test --no-compile --network hardhat",
+    "test:quick": "REPORT_GAS=true hardhat test --no-compile --network hardhat",
     "verify": "hardhat etherscan-verify"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "hardhat-deploy": "^0.11.26",
     "hardhat-gas-reporter": "^1.0.9",
     "prettier": "^2.8.4",
+    "solc": "0.8.17",
     "solidity-coverage": "^0.8.2",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.0",

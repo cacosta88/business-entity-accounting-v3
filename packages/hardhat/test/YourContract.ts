@@ -1,28 +1,365 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { YourContract } from "../typechain-types";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-describe("YourContract", function () {
-  // We define a fixture to reuse the same setup in every test.
-
+describe("YourContract - Business Entity Accounting", function () {
   let yourContract: YourContract;
-  before(async () => {
-    const [owner] = await ethers.getSigners();
+  let owner1: SignerWithAddress;
+  let owner2: SignerWithAddress;
+  let owner3: SignerWithAddress;
+  let nonOwner: SignerWithAddress;
+
+  beforeEach(async () => {
+    [owner1, owner2, owner3, nonOwner] = await ethers.getSigners();
+
     const yourContractFactory = await ethers.getContractFactory("YourContract");
-    yourContract = (await yourContractFactory.deploy(owner.address)) as YourContract;
+    const initialOwners = [owner1.address, owner2.address];
+    const capitalRequirements = [ethers.utils.parseEther("1.0"), ethers.utils.parseEther("1.0")];
+
+    yourContract = (await yourContractFactory.deploy(initialOwners, capitalRequirements)) as YourContract;
     await yourContract.deployed();
   });
 
   describe("Deployment", function () {
-    it("Should have the right message on deploy", async function () {
-      expect(await yourContract.greeting()).to.equal("Building Unstoppable Apps!!!");
+    it("Should deploy with correct initial owners", async function () {
+      const ownerAddresses = await yourContract.getOwnerAddresses();
+      expect(ownerAddresses.length).to.equal(2);
+      expect(ownerAddresses[0]).to.equal(owner1.address);
+      expect(ownerAddresses[1]).to.equal(owner2.address);
     });
 
-    it("Should allow setting a new message", async function () {
-      const newGreeting = "Learn Scaffold-ETH 2! :)";
+    it("Should have correct capital requirements", async function () {
+      const owner1Details = await yourContract.getOwnerDetails(owner1.address);
+      expect(owner1Details[1]).to.equal(ethers.utils.parseEther("1.0"));
+    });
 
-      await yourContract.setGreeting(newGreeting);
-      expect(await yourContract.greeting()).to.equal(newGreeting);
+    it("Should start at period 1", async function () {
+      const currentPeriod = await yourContract.currentPeriod();
+      expect(currentPeriod).to.equal(1);
+    });
+  });
+
+  describe("Capital Management", function () {
+    it("Should allow owner to deposit capital", async function () {
+      const depositAmount = ethers.utils.parseEther("1.0");
+      await expect(
+        yourContract.connect(owner1).depositCapital(owner1.address, depositAmount, {
+          value: depositAmount,
+        }),
+      )
+        .to.emit(yourContract, "CapitalDeposited")
+        .withArgs(owner1.address, depositAmount);
+
+      const totalCapital = await yourContract.totalCapital();
+      expect(totalCapital).to.equal(depositAmount);
+    });
+
+    it("Should not allow deposit with incorrect amount", async function () {
+      const incorrectAmount = ethers.utils.parseEther("0.5");
+      await expect(
+        yourContract.connect(owner1).depositCapital(owner1.address, incorrectAmount, {
+          value: incorrectAmount,
+        }),
+      ).to.be.reverted;
+    });
+
+    it("Should not allow non-owner to deposit", async function () {
+      const depositAmount = ethers.utils.parseEther("1.0");
+      await expect(
+        yourContract.connect(nonOwner).depositCapital(owner1.address, depositAmount, {
+          value: depositAmount,
+        }),
+      ).to.be.revertedWithCustomError(yourContract, "OwnerNotFound");
+    });
+
+    it("Should allow creating capital adjustment proposal", async function () {
+      // First, deposit capital to have voting power
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+
+      const newOwnerCapital = ethers.utils.parseEther("0.5");
+      await expect(
+        yourContract.connect(owner1).createCapitalAdjustmentProposal(owner3.address, newOwnerCapital, true),
+      ).to.emit(yourContract, "CapitalAdjustmentProposed");
+    });
+  });
+
+  describe("Expense Management", function () {
+    beforeEach(async () => {
+      // Deposit capital for both owners
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should allow creating expense proposal", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+      await expect(
+        yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount),
+      ).to.emit(yourContract, "ExpenseProposed");
+    });
+
+    it("Should allow voting on expense proposal", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+      await yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount);
+
+      await expect(yourContract.connect(owner2).voteForExpenseProposal(1)).to.emit(yourContract, "ExpenseVoted");
+    });
+
+    it("Should approve expense with majority vote", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+
+      // Owner1 creates proposal (50% vote)
+      await yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount);
+
+      // Owner2 votes (another 50%, total 100% > 50%)
+      await yourContract.connect(owner2).voteForExpenseProposal(1);
+
+      const expenseProposal = await yourContract.expenseProposals(1);
+      expect(expenseProposal.status).to.equal(1); // Approved
+    });
+  });
+
+  describe("Invoice Management", function () {
+    beforeEach(async () => {
+      // Deposit capital for owner1
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should allow owner to issue invoice", async function () {
+      const invoiceAmount = ethers.utils.parseEther("0.5");
+      await expect(
+        yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services"),
+      ).to.emit(yourContract, "InvoiceIssued");
+    });
+
+    it("Should allow payor to pay invoice", async function () {
+      const invoiceAmount = ethers.utils.parseEther("0.5");
+
+      // Issue invoice
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+
+      // Pay invoice
+      await expect(yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount })).to.emit(
+        yourContract,
+        "InvoicePaid",
+      );
+
+      const grossReceipts = await yourContract.grossReceipts();
+      expect(grossReceipts).to.equal(invoiceAmount);
+    });
+
+    it("Should not allow incorrect amount payment", async function () {
+      const invoiceAmount = ethers.utils.parseEther("0.5");
+      const incorrectAmount = ethers.utils.parseEther("0.3");
+
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+
+      await expect(
+        yourContract.connect(nonOwner).payInvoice(1, { value: incorrectAmount }),
+      ).to.be.revertedWithCustomError(yourContract, "IncorrectAmountSent");
+    });
+  });
+
+  describe("Accounting Period Management", function () {
+    beforeEach(async () => {
+      // Setup: deposit capital, create revenue, and set estimated revenue
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+
+      // Issue and pay an invoice
+      const invoiceAmount = ethers.utils.parseEther("1.0");
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+      await yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount });
+
+      // Set estimated earned revenue percentage
+      await yourContract.connect(owner1).setEstimatedEarnedRevenue(100);
+    });
+
+    it("Should allow proposing period close", async function () {
+      // Owner1 proposes (50%)
+      await yourContract.connect(owner1).proposeCloseAccountingPeriod();
+
+      // Owner2 votes (50%, total 100% > 50%)
+      await expect(yourContract.connect(owner2).voteForClosePeriodProposal()).to.emit(
+        yourContract,
+        "AccountingPeriodClosed",
+      );
+    });
+
+    it("Should distribute profits to owners", async function () {
+      const owner1BalanceBefore = await ethers.provider.getBalance(owner1.address);
+
+      // Close period
+      await yourContract.connect(owner1).proposeCloseAccountingPeriod();
+      await yourContract.connect(owner2).voteForClosePeriodProposal();
+
+      // Check pending withdrawals
+      const pendingWithdrawal = await yourContract.getPendingWithdrawals(owner1.address);
+      expect(pendingWithdrawal).to.be.gt(0);
+
+      // Withdraw
+      await yourContract.connect(owner1).withdraw();
+
+      const owner1BalanceAfter = await ethers.provider.getBalance(owner1.address);
+      expect(owner1BalanceAfter).to.be.gt(owner1BalanceBefore);
+    });
+
+    it("Should increment period after closing", async function () {
+      await yourContract.connect(owner1).proposeCloseAccountingPeriod();
+      await yourContract.connect(owner2).voteForClosePeriodProposal();
+
+      const currentPeriod = await yourContract.currentPeriod();
+      expect(currentPeriod).to.equal(2);
+    });
+  });
+
+  describe("View Functions", function () {
+    beforeEach(async () => {
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should calculate ownership percentage correctly", async function () {
+      const owner1Capital = ethers.utils.parseEther("1.0");
+      const percentage = await yourContract.calculateOwnershipPercentage(owner1Capital);
+      expect(percentage).to.equal(50); // 1 ETH out of 2 ETH total
+    });
+
+    it("Should return gross receipts and total expenses", async function () {
+      const result = await yourContract.getGrossReceiptsAndTotalExpenses();
+      expect(result.length).to.equal(2);
+      expect(result[0]).to.equal(0); // No receipts yet
+      expect(result[1]).to.equal(0); // No expenses yet
+    });
+
+    it("Should return array of capitals", async function () {
+      const capitals = await yourContract.getArrayOfCapital();
+      expect(capitals.length).to.equal(2);
+      expect(capitals[0]).to.equal(ethers.utils.parseEther("1.0"));
+      expect(capitals[1]).to.equal(ethers.utils.parseEther("1.0"));
+    });
+  });
+
+  describe("Batch Capital Increase", function () {
+    beforeEach(async () => {
+      // Deposit initial capital for voting power
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should allow proposing batch capital increase", async function () {
+      const addresses = [owner1.address, owner2.address];
+      const increases = [ethers.utils.parseEther("0.5"), ethers.utils.parseEther("0.5")];
+
+      await yourContract.connect(owner1).proposeBatchCapitalIncrease(addresses, increases);
+
+      const isBatchActive = await yourContract.isBatchCapitalIncreaseActive();
+      expect(isBatchActive).to.be.true;
+    });
+
+    it("Should allow voting on batch capital increase", async function () {
+      const addresses = [owner1.address, owner2.address];
+      const increases = [ethers.utils.parseEther("0.5"), ethers.utils.parseEther("0.5")];
+
+      await yourContract.connect(owner1).proposeBatchCapitalIncrease(addresses, increases);
+      await yourContract.connect(owner2).voteForBatchCapitalIncrease();
+
+      const batchApproved = await yourContract.batchApproved();
+      expect(batchApproved).to.be.true;
+    });
+
+    it("Should allow deposit after batch approval", async function () {
+      const addresses = [owner1.address, owner2.address];
+      const increases = [ethers.utils.parseEther("0.5"), ethers.utils.parseEther("0.5")];
+
+      await yourContract.connect(owner1).proposeBatchCapitalIncrease(addresses, increases);
+      await yourContract.connect(owner2).voteForBatchCapitalIncrease();
+
+      await expect(
+        yourContract.connect(owner1).depositForBatchCapitalIncrease({
+          value: ethers.utils.parseEther("0.5"),
+        }),
+      ).to.not.be.reverted;
+    });
+  });
+
+  describe("Edge Cases and Security", function () {
+    beforeEach(async () => {
+      await yourContract
+        .connect(owner1)
+        .depositCapital(owner1.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+      await yourContract
+        .connect(owner2)
+        .depositCapital(owner2.address, ethers.utils.parseEther("1.0"), { value: ethers.utils.parseEther("1.0") });
+    });
+
+    it("Should not allow double voting on proposals", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+      await yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount);
+
+      await expect(yourContract.connect(owner1).voteForExpenseProposal(1)).to.be.revertedWithCustomError(
+        yourContract,
+        "CanOnlyVoteOnce",
+      );
+    });
+
+    it("Should not allow settling unapproved expense", async function () {
+      const expenseAmount = ethers.utils.parseEther("0.1");
+      await yourContract.connect(owner1).createExpenseProposal("Office supplies", nonOwner.address, expenseAmount);
+
+      // Try to settle before approval
+      await expect(yourContract.connect(owner1).settleExpense(1, true)).to.be.revertedWithCustomError(
+        yourContract,
+        "ExpenseNotApproved",
+      );
+    });
+
+    it("Should not allow paying invoice twice", async function () {
+      const invoiceAmount = ethers.utils.parseEther("0.5");
+
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+
+      await yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount });
+
+      await expect(yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount })).to.be.reverted; // Invoice should be removed from active list
+    });
+
+    it("Should not allow withdrawal with zero pending amount", async function () {
+      await expect(yourContract.connect(owner1).withdraw()).to.be.revertedWithCustomError(
+        yourContract,
+        "OwnerNotFound",
+      );
+    });
+
+    it("Should track invoice payment correctly", async function () {
+      const invoiceAmount = ethers.utils.parseEther("1.0");
+
+      await yourContract.connect(owner1).issueInvoice(nonOwner.address, invoiceAmount, "Consulting services");
+
+      await yourContract.connect(nonOwner).payInvoice(1, { value: invoiceAmount });
+
+      const isPaid = await yourContract.getInvoicePaid(1);
+      expect(isPaid).to.be.true;
     });
   });
 });
